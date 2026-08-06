@@ -1,6 +1,12 @@
 "use client";
 
-import { type ComponentProps, type FormEvent, useId, useState } from "react";
+import {
+  type ComponentProps,
+  type FormEvent,
+  type ReactNode,
+  useId,
+  useState,
+} from "react";
 import { useRouter } from "next/navigation";
 import { Eye, EyeOff } from "lucide-react";
 
@@ -24,10 +30,10 @@ const initialValues: LoginFormValues = {
 };
 
 const inputClassName =
-  "h-12.5 rounded-[15px] border-[#ABB3BF] bg-background px-5.5 py-4.25 font-sans text-[14px] leading-4 text-[#1C2127] shadow-none placeholder:text-[#ABB3BF] focus-visible:border-primary focus-visible:ring-primary/20";
+  "h-12.5 rounded-[15px] border-field-border bg-background px-5.5 py-4.25 font-sans text-[14px] leading-4 text-text-normal shadow-none placeholder:text-field-placeholder focus-visible:border-primary focus-visible:ring-primary/20";
 
 const errorInputClassName =
-  "border-[#AC2F33] text-[#AC2F33] focus-visible:border-[#AC2F33] focus-visible:ring-[#AC2F33]/20";
+  "border-text-error text-text-error focus-visible:border-text-error focus-visible:ring-text-error/20";
 
 function validateLoginForm(values: LoginFormValues): LoginFormErrors {
   const errors: LoginFormErrors = {};
@@ -50,6 +56,7 @@ type LoginInputProps = ComponentProps<typeof Input> & {
   label: string;
   error?: string;
   errorId: string;
+  endAdornment?: ReactNode;
 };
 
 function LoginInput({
@@ -58,29 +65,48 @@ function LoginInput({
   error,
   errorId,
   className,
+  endAdornment,
   ...props
 }: LoginInputProps) {
+  const hasError = Boolean(error);
+
   return (
     <div className="flex flex-col gap-2.5">
       <div className="flex items-center justify-between gap-2.5">
-        <label htmlFor={id} className="font-sans text-[14px] leading-4 text-[#111418]">
+        <label
+          htmlFor={id}
+          className="text-text-heading font-sans text-[14px] leading-4"
+        >
           {label}
         </label>
 
         {error ? (
-          <p id={errorId} className="font-sans text-[14px] leading-4 text-[#AC2F33]">
+          <p id={errorId} className="text-text-error font-sans text-[14px] leading-4">
             {error}
           </p>
         ) : null}
       </div>
 
-      <Input
-        id={id}
-        aria-invalid={Boolean(error)}
-        aria-describedby={error ? errorId : undefined}
-        className={cn(inputClassName, error && errorInputClassName, className)}
-        {...props}
-      />
+      <div className="relative">
+        <Input
+          id={id}
+          aria-invalid={hasError}
+          aria-describedby={hasError ? errorId : undefined}
+          className={cn(
+            inputClassName,
+            endAdornment && "pr-12",
+            hasError && errorInputClassName,
+            className,
+          )}
+          {...props}
+        />
+
+        {endAdornment ? (
+          <div className="absolute top-1/2 right-5.5 -translate-y-1/2">
+            {endAdornment}
+          </div>
+        ) : null}
+      </div>
     </div>
   );
 }
@@ -107,7 +133,7 @@ export function LoginForm() {
     setErrors((currentErrors) => ({
       ...currentErrors,
       form: undefined,
-      ...(key === "email" || key === "password" ? { [key]: undefined } : null),
+      ...(key === "email" || key === "password" ? { [key]: undefined } : {}),
     }));
   }
 
@@ -133,7 +159,7 @@ export function LoginForm() {
           Увійти до Project name
         </h1>
 
-        <p className="mt-2 font-sans text-[14px] leading-4 text-[#1C2127]">
+        <p className="text-text-normal mt-2 font-sans text-[14px] leading-4">
           Введіть адресу електронної пошти та пароль
           <br />
           для входу!
@@ -141,7 +167,7 @@ export function LoginForm() {
       </div>
 
       {errors.form ? (
-        <p className="mb-4 font-sans text-[14px] leading-4 text-[#AC2F33]">
+        <p className="text-text-error mb-4 font-sans text-[14px] leading-4">
           {errors.form}
         </p>
       ) : null}
@@ -169,28 +195,28 @@ export function LoginForm() {
           value={values.password}
           placeholder="Ваш пароль"
           onChange={(event) => updateValue("password", event.target.value)}
-          className="pr-12"
+          endAdornment={
+            <button
+              type="button"
+              aria-label={isPasswordVisible ? "Сховати пароль" : "Показати пароль"}
+              onClick={() => setIsPasswordVisible((isVisible) => !isVisible)}
+              className="text-text-normal hover:text-primary focus-visible:text-primary grid size-4 place-items-center transition-colors outline-none"
+            >
+              {isPasswordVisible ? (
+                <EyeOff className="size-4" aria-hidden="true" />
+              ) : (
+                <Eye className="size-4" aria-hidden="true" />
+              )}
+            </button>
+          }
         />
-
-        <button
-          type="button"
-          aria-label={isPasswordVisible ? "Сховати пароль" : "Показати пароль"}
-          onClick={() => setIsPasswordVisible((isVisible) => !isVisible)}
-          className="hover:text-primary focus-visible:text-primary -mt-14.5 mr-5.5 ml-auto grid size-4 place-items-center text-[#1C2127] transition-colors outline-none"
-        >
-          {isPasswordVisible ? (
-            <EyeOff className="size-4" aria-hidden="true" />
-          ) : (
-            <Eye className="size-4" aria-hidden="true" />
-          )}
-        </button>
       </div>
 
-      <label className="mt-6.25 flex w-fit items-center gap-2 font-sans text-[14px] leading-4 text-[#1C2127]">
+      <label className="text-text-normal mt-6.25 flex w-fit items-center gap-2 font-sans text-[14px] leading-4">
         <Checkbox
           checked={values.remember}
           onCheckedChange={(checked) => updateValue("remember", checked === true)}
-          className="data-[state=checked]:border-primary data-[state=checked]:bg-primary size-4 rounded-lg border-[#ABB3BF]"
+          className="border-field-border data-[state=checked]:border-primary data-[state=checked]:bg-primary size-4 rounded-lg"
         />
         Памʼятай мене
       </label>

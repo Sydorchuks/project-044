@@ -5,8 +5,14 @@
 @custom-variant dark (&:is(.dark *));
 
 @theme inline {
+  --breakpoint-desktop: 120rem;
+  --breakpoint-ultra: 156.25rem;
+
   --color-background: var(--background);
   --color-foreground: var(--foreground);
+
+  --color-brand-foreground: var(--brand-foreground);
+  --color-brand-light: var(--brand-light);
 
   --font-sans: var(--font-roboto);
   --font-heading: var(--font-montserrat);
@@ -46,6 +52,23 @@
   --color-info: var(--info);
   --color-info-foreground: var(--info-foreground);
 
+  --color-brand-deep: var(--brand-deep);
+  --color-brand-soft: var(--brand-soft);
+  --color-brand-dark: var(--brand-dark);
+
+  --color-text-heading: var(--text-heading);
+  --color-text-normal: var(--text-normal);
+  --color-text-muted: var(--text-muted);
+  --color-text-subtle: var(--text-subtle);
+  --color-text-error: var(--text-error);
+
+  --color-field-border: var(--field-border);
+  --color-field-placeholder: var(--field-placeholder);
+
+  --color-main-bg: var(--main-bg);
+  --color-surface: var(--surface);
+  --color-surface-muted: var(--surface-muted);
+
   --color-sidebar: var(--sidebar);
   --color-sidebar-foreground: var(--sidebar-foreground);
   --color-sidebar-primary: var(--sidebar-primary);
@@ -73,6 +96,9 @@
 :root {
   --background: #ffffff;
   --foreground: #1c2127;
+
+  --brand-foreground: #363636;
+  --brand-light: #a28df5;
 
   --card: #ffffff;
   --card-foreground: #1c2127;
@@ -109,6 +135,21 @@
   --info-foreground: #ffffff;
 
   --brand-deep: #5642a6;
+  --brand-soft: #bdadff;
+  --brand-dark: #4628c0;
+
+  --text-heading: #111418;
+  --text-normal: #1c2127;
+  --text-muted: #738091;
+  --text-subtle: #abb3bf;
+  --text-error: #ac2f33;
+
+  --field-border: #abb3bf;
+  --field-placeholder: #abb3bf;
+
+  --main-bg: #edeff2;
+  --surface: #ffffff;
+  --surface-muted: #f6f7f9;
 
   --chart-1: #7961db;
   --chart-2: #13c9ba;
@@ -127,6 +168,7 @@
   --sidebar-border: #e0e2e7;
   --sidebar-ring: #7961db;
 }
+
 .dark {
   --background: #111418;
   --foreground: #f6f7f9;
@@ -164,6 +206,23 @@
 
   --info: #68c1ee;
   --info-foreground: #111418;
+
+  --brand-deep: #4c90f0;
+  --brand-soft: #8bbcff;
+  --brand-dark: #2563eb;
+
+  --text-heading: #f6f7f9;
+  --text-normal: #f6f7f9;
+  --text-muted: #abb3bf;
+  --text-subtle: #738091;
+  --text-error: #e76a6e;
+
+  --field-border: #383e47;
+  --field-placeholder: #abb3bf;
+
+  --main-bg: #111418;
+  --surface: #1c2127;
+  --surface-muted: #252a31;
 
   --chart-1: #4c90f0;
   --chart-2: #13c9ba;

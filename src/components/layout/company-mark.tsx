@@ -13,10 +13,10 @@ type CompanyMarkProps = {
 export function CompanyMark({
   prefix = "RESERV",
   accent = "NOW",
-  prefixColor = "#363636",
-  accentFrom = "#A28DF5",
-  accentVia = "#7961DB",
-  accentTo = "#4628C0",
+  prefixColor = "var(--brand-foreground)",
+  accentFrom = "var(--brand-light)",
+  accentVia = "var(--primary)",
+  accentTo = "var(--brand-dark)",
   className,
 }: CompanyMarkProps) {
   return (
@@ -27,6 +27,7 @@ export function CompanyMark({
       )}
     >
       <span style={{ color: prefixColor }}>{prefix}</span>
+
       <span
         className="bg-clip-text text-transparent"
         style={{
