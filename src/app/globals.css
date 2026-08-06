@@ -10,6 +10,7 @@
 
   --font-sans: var(--font-roboto);
   --font-heading: var(--font-montserrat);
+  --font-brand: var(--font-race-sport);
 
   --color-card: var(--card);
   --color-card-foreground: var(--card-foreground);
