@@ -14,6 +14,7 @@ import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
+import { loginSchema } from "@/features/auth/schemas/login-schema";
 
 type LoginFormValues = {
   email: string;
@@ -29,27 +30,22 @@ const initialValues: LoginFormValues = {
   remember: true,
 };
 
-const inputClassName =
-  "h-12.5 rounded-[15px] border-field-border bg-background px-5.5 py-4.25 font-sans text-[14px] leading-4 text-text-normal shadow-none placeholder:text-field-placeholder focus-visible:border-primary focus-visible:ring-primary/20";
-
-const errorInputClassName =
-  "border-text-error text-text-error focus-visible:border-text-error focus-visible:ring-text-error/20";
-
 function validateLoginForm(values: LoginFormValues): LoginFormErrors {
-  const errors: LoginFormErrors = {};
-  const email = values.email.trim();
+  const result = loginSchema.safeParse(values);
 
-  if (!email) {
-    errors.email = "Введіть електронну пошту";
-  } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-    errors.email = "Некоректна електронна пошта";
+  if (result.success) {
+    return {};
   }
 
-  if (!values.password) {
-    errors.password = "Введіть пароль";
-  }
+  return result.error.issues.reduce<LoginFormErrors>((errors, issue) => {
+    const field = issue.path[0];
 
-  return errors;
+    if (field === "email" || field === "password") {
+      errors[field] = issue.message;
+    }
+
+    return errors;
+  }, {});
 }
 
 type LoginInputProps = ComponentProps<typeof Input> & {
@@ -92,12 +88,7 @@ function LoginInput({
           id={id}
           aria-invalid={hasError}
           aria-describedby={hasError ? errorId : undefined}
-          className={cn(
-            inputClassName,
-            endAdornment && "pr-12",
-            hasError && errorInputClassName,
-            className,
-          )}
+          className={cn(endAdornment && "pr-12", className)}
           {...props}
         />
 
@@ -148,7 +139,9 @@ export function LoginForm() {
     }
 
     setIsSubmitting(true);
+
     await new Promise((resolve) => setTimeout(resolve, 450));
+
     router.push("/");
   }
 

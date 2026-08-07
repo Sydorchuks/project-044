@@ -4,6 +4,8 @@ import { LoginForm } from "@/components/auth/login-form";
 import { CompanyMark } from "@/components/layout/company-mark";
 
 export default function LoginPage() {
+  const currentYear = new Date().getFullYear();
+
   return (
     <main className="bg-background grid min-h-dvh lg:grid-cols-[50%_50%]">
       <section className="bg-background relative flex min-h-dvh items-center justify-center px-6 py-12">
@@ -14,7 +16,7 @@ export default function LoginPage() {
             </div>
 
             <p className="text-text-subtle absolute bottom-0 left-0 font-sans text-[14px] leading-4">
-              © 2023 FicusTechnologies
+              © {currentYear} FicusTechnologies
             </p>
           </div>
         </div>
