@@ -1,182 +1,22 @@
 "use client";
 
-import {
-  type ComponentProps,
-  type FormEvent,
-  type ReactNode,
-  useId,
-  useState,
-} from "react";
-import { useRouter } from "next/navigation";
-import { AxiosError } from "axios";
+import { useId, useState } from "react";
 import { Eye, EyeOff } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Input } from "@/components/ui/input";
-import { login } from "@/features/auth/api/auth-api";
-import { saveAuthTokens } from "@/features/auth/lib/auth-storage";
-import {
-  loginSchema,
-  type LoginFormValues,
-} from "@/features/auth/schemas/login-schema";
-import { cn } from "@/lib/utils";
-
-type LoginFormErrors = Partial<Record<"email" | "password" | "form", string>>;
-
-const initialValues: LoginFormValues = {
-  email: "",
-  password: "",
-  remember: true,
-};
-
-function getValidationErrors(values: LoginFormValues): LoginFormErrors {
-  const result = loginSchema.safeParse(values);
-
-  if (result.success) {
-    return {};
-  }
-
-  return result.error.issues.reduce<LoginFormErrors>((errors, issue) => {
-    const field = issue.path[0];
-
-    if (field === "email" || field === "password") {
-      errors[field] = issue.message;
-    }
-
-    return errors;
-  }, {});
-}
-
-function getLoginError(error: unknown): LoginFormErrors {
-  if (error instanceof AxiosError) {
-    if (error.response?.status === 401) {
-      return { password: "Невірний пароль" };
-    }
-
-    if (error.response?.status === 403) {
-      return { form: "Акаунт не активний" };
-    }
-
-    if (error.response?.status === 400) {
-      return { form: "Перевірте електронну пошту та пароль" };
-    }
-  }
-
-  return { form: "Не вдалося увійти. Спробуйте ще раз" };
-}
-
-type LoginInputProps = ComponentProps<typeof Input> & {
-  label: string;
-  error?: string;
-  errorId: string;
-  endAdornment?: ReactNode;
-};
-
-function LoginInput({
-  id,
-  label,
-  error,
-  errorId,
-  className,
-  endAdornment,
-  ...props
-}: LoginInputProps) {
-  const hasError = Boolean(error);
-
-  return (
-    <div className="flex flex-col gap-2.5">
-      <div className="flex items-center justify-between gap-2.5">
-        <label
-          htmlFor={id}
-          className="text-text-heading font-sans text-[14px] leading-4"
-        >
-          {label}
-        </label>
-
-        {error ? (
-          <p id={errorId} className="text-text-error font-sans text-[14px] leading-4">
-            {error}
-          </p>
-        ) : null}
-      </div>
-
-      <div className="relative">
-        <Input
-          id={id}
-          aria-invalid={hasError}
-          aria-describedby={hasError ? errorId : undefined}
-          className={cn(endAdornment && "pr-12", className)}
-          {...props}
-        />
-
-        {endAdornment ? (
-          <div className="absolute top-1/2 right-5.5 -translate-y-1/2">
-            {endAdornment}
-          </div>
-        ) : null}
-      </div>
-    </div>
-  );
-}
+import { useLoginForm } from "@/features/auth/hooks/use-login-form";
+import LoginInput from "./login-input";
 
 export function LoginForm() {
-  const router = useRouter();
-
   const emailId = useId();
   const passwordId = useId();
   const emailErrorId = useId();
   const passwordErrorId = useId();
 
-  const [values, setValues] = useState<LoginFormValues>(initialValues);
-  const [errors, setErrors] = useState<LoginFormErrors>({});
   const [isPasswordVisible, setIsPasswordVisible] = useState(false);
-  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  function updateValue<Key extends keyof LoginFormValues>(
-    key: Key,
-    value: LoginFormValues[Key],
-  ) {
-    setValues((currentValues) => ({ ...currentValues, [key]: value }));
-
-    setErrors((currentErrors) => ({
-      ...currentErrors,
-      form: undefined,
-      ...(key === "email" || key === "password" ? { [key]: undefined } : {}),
-    }));
-  }
-
-  async function handleSubmit(event: FormEvent<HTMLFormElement>) {
-    event.preventDefault();
-
-    const validationErrors = getValidationErrors(values);
-
-    if (Object.keys(validationErrors).length > 0) {
-      setErrors(validationErrors);
-      return;
-    }
-
-    setIsSubmitting(true);
-
-    try {
-      const data = await login({
-        email: values.email.trim(),
-        password: values.password,
-      });
-
-      saveAuthTokens({
-        accessToken: data.access_token,
-        refreshToken: data.refresh_token,
-        rememberMe: values.remember,
-      });
-
-      router.push("/");
-    } catch (error) {
-      setErrors(getLoginError(error));
-    } finally {
-      setIsSubmitting(false);
-    }
-  }
+  const { values, errors, isSubmitting, updateValue, handleSubmit } = useLoginForm();
 
   return (
     <form onSubmit={handleSubmit} noValidate className="w-full">
