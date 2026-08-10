@@ -8,7 +8,7 @@ export function SidebarDivider({ className }: SidebarDividerProps) {
   return (
     <div
       className={cn(
-        "h-px w-full bg-[linear-gradient(90deg,rgba(224,225,226,0)_0%,#E0E1E2_18%,#E0E1E2_82%,rgba(224,225,226,0)_100%)]",
+        "h-px w-full bg-[linear-gradient(90deg,transparent_0%,var(--border)_18%,var(--border)_82%,transparent_100%)]",
         className,
       )}
     />

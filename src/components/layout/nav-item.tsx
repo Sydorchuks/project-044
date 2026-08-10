@@ -2,9 +2,10 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+
+import { MaskIcons } from "@/components/mask-icons";
 import type { NavigationItem } from "@/config/navigation";
 import { cn } from "@/lib/utils";
-import { MaskIcons } from "@/components/mask-icons";
 
 type NavItemProps = {
   item: NavigationItem;
@@ -23,20 +24,20 @@ export function NavItem({ item }: NavItemProps) {
         "xl:w-54.5 xl:justify-start xl:gap-3.75 xl:px-4",
         isActive
           ? "bg-primary text-primary-foreground"
-          : "hover:text-primary bg-transparent text-[#738091] hover:bg-white/45",
+          : "text-text-muted hover:bg-surface/45 hover:text-primary bg-transparent",
       )}
     >
       <span
         className={cn(
           "grid size-7.5 shrink-0 place-items-center rounded-4xl transition-colors",
-          isActive ? "bg-[#F6F7F9]" : "bg-background",
+          isActive ? "bg-surface-muted" : "bg-background",
         )}
       >
         <MaskIcons
           src={item.icon}
           className={cn(
             "size-4 bg-current transition-colors",
-            isActive ? "text-primary" : "group-hover:text-primary text-[#738091]",
+            isActive ? "text-primary" : "text-text-muted group-hover:text-primary",
           )}
         />
       </span>
