@@ -1,149 +1,22 @@
 "use client";
 
-import {
-  type ComponentProps,
-  type FormEvent,
-  type ReactNode,
-  useId,
-  useState,
-} from "react";
-import { useRouter } from "next/navigation";
+import { useId, useState } from "react";
 import { Eye, EyeOff } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Input } from "@/components/ui/input";
-import { cn } from "@/lib/utils";
-import { loginSchema } from "@/features/auth/schemas/login-schema";
-
-type LoginFormValues = {
-  email: string;
-  password: string;
-  remember: boolean;
-};
-
-type LoginFormErrors = Partial<Record<"email" | "password" | "form", string>>;
-
-const initialValues: LoginFormValues = {
-  email: "",
-  password: "",
-  remember: true,
-};
-
-function validateLoginForm(values: LoginFormValues): LoginFormErrors {
-  const result = loginSchema.safeParse(values);
-
-  if (result.success) {
-    return {};
-  }
-
-  return result.error.issues.reduce<LoginFormErrors>((errors, issue) => {
-    const field = issue.path[0];
-
-    if (field === "email" || field === "password") {
-      errors[field] = issue.message;
-    }
-
-    return errors;
-  }, {});
-}
-
-type LoginInputProps = ComponentProps<typeof Input> & {
-  label: string;
-  error?: string;
-  errorId: string;
-  endAdornment?: ReactNode;
-};
-
-function LoginInput({
-  id,
-  label,
-  error,
-  errorId,
-  className,
-  endAdornment,
-  ...props
-}: LoginInputProps) {
-  const hasError = Boolean(error);
-
-  return (
-    <div className="flex flex-col gap-2.5">
-      <div className="flex items-center justify-between gap-2.5">
-        <label
-          htmlFor={id}
-          className="text-text-heading font-sans text-[14px] leading-4"
-        >
-          {label}
-        </label>
-
-        {error ? (
-          <p id={errorId} className="text-text-error font-sans text-[14px] leading-4">
-            {error}
-          </p>
-        ) : null}
-      </div>
-
-      <div className="relative">
-        <Input
-          id={id}
-          aria-invalid={hasError}
-          aria-describedby={hasError ? errorId : undefined}
-          className={cn(endAdornment && "pr-12", className)}
-          {...props}
-        />
-
-        {endAdornment ? (
-          <div className="absolute top-1/2 right-5.5 -translate-y-1/2">
-            {endAdornment}
-          </div>
-        ) : null}
-      </div>
-    </div>
-  );
-}
+import { useLoginForm } from "@/features/auth/hooks/use-login-form";
+import LoginInput from "./login-input";
 
 export function LoginForm() {
-  const router = useRouter();
-
   const emailId = useId();
   const passwordId = useId();
   const emailErrorId = useId();
   const passwordErrorId = useId();
 
-  const [values, setValues] = useState<LoginFormValues>(initialValues);
-  const [errors, setErrors] = useState<LoginFormErrors>({});
   const [isPasswordVisible, setIsPasswordVisible] = useState(false);
-  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  function updateValue<Key extends keyof LoginFormValues>(
-    key: Key,
-    value: LoginFormValues[Key],
-  ) {
-    setValues((currentValues) => ({ ...currentValues, [key]: value }));
-
-    setErrors((currentErrors) => ({
-      ...currentErrors,
-      form: undefined,
-      ...(key === "email" || key === "password" ? { [key]: undefined } : {}),
-    }));
-  }
-
-  async function handleSubmit(event: FormEvent<HTMLFormElement>) {
-    event.preventDefault();
-
-    const nextErrors = validateLoginForm(values);
-
-    if (Object.keys(nextErrors).length > 0) {
-      setErrors(nextErrors);
-      return;
-    }
-
-    setIsSubmitting(true);
-
-    await new Promise((resolve) => setTimeout(resolve, 450));
-
-    router.push("/");
-  }
+  const { values, errors, isSubmitting, updateValue, handleSubmit } = useLoginForm();
 
   return (
     <form onSubmit={handleSubmit} noValidate className="w-full">
