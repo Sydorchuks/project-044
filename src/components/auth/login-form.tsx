@@ -8,19 +8,19 @@ import {
   useState,
 } from "react";
 import { useRouter } from "next/navigation";
+import { AxiosError } from "axios";
 import { Eye, EyeOff } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
+import { login } from "@/features/auth/api/auth-api";
+import { saveAuthTokens } from "@/features/auth/lib/auth-storage";
+import {
+  loginSchema,
+  type LoginFormValues,
+} from "@/features/auth/schemas/login-schema";
 import { cn } from "@/lib/utils";
-import { loginSchema } from "@/features/auth/schemas/login-schema";
-
-type LoginFormValues = {
-  email: string;
-  password: string;
-  remember: boolean;
-};
 
 type LoginFormErrors = Partial<Record<"email" | "password" | "form", string>>;
 
@@ -30,7 +30,7 @@ const initialValues: LoginFormValues = {
   remember: true,
 };
 
-function validateLoginForm(values: LoginFormValues): LoginFormErrors {
+function getValidationErrors(values: LoginFormValues): LoginFormErrors {
   const result = loginSchema.safeParse(values);
 
   if (result.success) {
@@ -46,6 +46,24 @@ function validateLoginForm(values: LoginFormValues): LoginFormErrors {
 
     return errors;
   }, {});
+}
+
+function getLoginError(error: unknown): LoginFormErrors {
+  if (error instanceof AxiosError) {
+    if (error.response?.status === 401) {
+      return { password: "Невірний пароль" };
+    }
+
+    if (error.response?.status === 403) {
+      return { form: "Акаунт не активний" };
+    }
+
+    if (error.response?.status === 400) {
+      return { form: "Перевірте електронну пошту та пароль" };
+    }
+  }
+
+  return { form: "Не вдалося увійти. Спробуйте ще раз" };
 }
 
 type LoginInputProps = ComponentProps<typeof Input> & {
@@ -131,18 +149,33 @@ export function LoginForm() {
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
 
-    const nextErrors = validateLoginForm(values);
+    const validationErrors = getValidationErrors(values);
 
-    if (Object.keys(nextErrors).length > 0) {
-      setErrors(nextErrors);
+    if (Object.keys(validationErrors).length > 0) {
+      setErrors(validationErrors);
       return;
     }
 
     setIsSubmitting(true);
 
-    await new Promise((resolve) => setTimeout(resolve, 450));
+    try {
+      const data = await login({
+        email: values.email.trim(),
+        password: values.password,
+      });
 
-    router.push("/");
+      saveAuthTokens({
+        accessToken: data.access_token,
+        refreshToken: data.refresh_token,
+        rememberMe: values.remember,
+      });
+
+      router.push("/");
+    } catch (error) {
+      setErrors(getLoginError(error));
+    } finally {
+      setIsSubmitting(false);
+    }
   }
 
   return (
