@@ -1,6 +1,7 @@
 "use client";
 
 import { Download, Plus, Search } from "lucide-react";
+import { useRouter } from "next/navigation";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -8,6 +9,7 @@ import { useUsersPage } from "@/features/users/hooks/use-users-page";
 import { UsersTable } from "./users-table";
 
 export function UsersPage() {
+  const router = useRouter();
   const {
     users,
     search,
@@ -21,6 +23,10 @@ export function UsersPage() {
     handleClear,
     setPage,
   } = useUsersPage();
+
+  function handleCreateUser() {
+    router.push("/users/create");
+  }
 
   return (
     <section className="bg-main-bg desktop:pr-10 ultra:pr-14 min-h-full px-5 pt-4 pb-8 xl:px-0 xl:pt-0 xl:pr-7">
@@ -74,6 +80,7 @@ export function UsersPage() {
 
             <Button
               type="button"
+              onClick={handleCreateUser}
               className="desktop:h-11 desktop:px-5 h-10 rounded-3xl px-4 font-sans text-[14px] font-bold"
             >
               <Plus className="size-4" />
@@ -90,6 +97,7 @@ export function UsersPage() {
           page={page}
           totalPages={totalPages}
           onPageChange={setPage}
+          onCreateUser={handleCreateUser}
         />
       </div>
     </section>

@@ -10,7 +10,7 @@ export type User = {
   description?: string | null;
   created_at: string;
   updated_at: string;
-  account: {
+  account?: {
     id: number;
     email: string;
     status: UserStatus;
@@ -38,4 +38,20 @@ export type GetUsersParams = {
   limit?: number;
   search?: string;
   sort?: string;
+};
+
+export type CreateUserPayload = {
+  email: string;
+  roleId: number;
+  user: {
+    first_name: string;
+    last_name: string;
+    phone: string;
+    domain_url: string;
+    description?: string;
+  };
+};
+
+export type CreateUserResponse = {
+  reset_token?: string;
 };
