@@ -1,10 +1,9 @@
-import { apiClient } from "@/lib/api/client";
+import { usersResponseSchema } from "@/features/users/schemas/user.schema";
 import type { GetUsersParams, UsersResponse } from "@/features/users/types/user.types";
+import { apiClient } from "@/lib/api/client";
 
-export async function getUsers(params: GetUsersParams = {}) {
-  const { data } = await apiClient.get<UsersResponse>("api/users", {
-    params,
-  });
+export async function getUsers(params: GetUsersParams = {}): Promise<UsersResponse> {
+  const { data } = await apiClient.get<unknown>("api/users", { params });
 
-  return data;
+  return usersResponseSchema.parse(data);
 }

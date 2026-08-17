@@ -1,7 +1,13 @@
+"use client";
+
+import { ChevronLeft, ChevronRight } from "lucide-react";
+import Link from "next/link";
+import { usePathname, useSearchParams } from "next/navigation";
+import { useMemo, type ReactNode } from "react";
+import { DataTable } from "@/components/data-table";
+import { createUsersTableColumns } from "@/components/users/users-table-columns";
+import type { UsersSort, UsersSortField } from "@/features/users/hooks/use-users-page";
 import type { User } from "@/features/users/types/user.types";
-import { formatUserDate, getUserFullName } from "@/features/users/lib/user-formatters";
-import { UserStatusBadge } from "./user-status-badge";
-import { Button } from "../ui/button";
 
 type UsersTableProps = {
   users: User[];
@@ -10,18 +16,9 @@ type UsersTableProps = {
   rangeLabel: string;
   page: number;
   totalPages: number;
-  onPageChange: (page: number) => void;
+  sort: UsersSort;
+  onSortChange: (field: UsersSortField) => void;
 };
-
-const columns = [
-  { title: "ID", className: "w-[8%]" },
-  { title: "Імʼя", className: "w-[18%]" },
-  { title: "Телефон", className: "w-[17%]" },
-  { title: "Ел. пошта", className: "w-[24%]" },
-  { title: "Статус", className: "w-[13%]" },
-  { title: "Створено", className: "w-[13%]" },
-  { title: "Дія", className: "w-[12%]" },
-];
 
 export function UsersTable({
   users,
@@ -30,157 +27,199 @@ export function UsersTable({
   rangeLabel,
   page,
   totalPages,
-  onPageChange,
+  sort,
+  onSortChange,
 }: UsersTableProps) {
-  const shouldShowState = isLoading || error || users.length === 0;
+  const columns = useMemo(
+    () =>
+      createUsersTableColumns({
+        sort,
+        onSortChange,
+      }),
+    [sort, onSortChange],
+  );
 
   return (
     <div className="bg-background w-full overflow-hidden rounded-3xl shadow-sm">
       <div className="overflow-x-auto">
-        <table className="desktop:min-w-245 w-full min-w-190 table-fixed border-collapse font-sans">
-          <UsersTableHead />
-
-          <tbody>
-            {shouldShowState ? (
-              <UsersTableState isLoading={isLoading} error={error} />
-            ) : (
-              users.map((user) => <UsersTableRow key={user.id} user={user} />)
-            )}
-          </tbody>
-        </table>
+        <DataTable<User>
+          data={users}
+          columns={columns}
+          isLoading={isLoading}
+          error={error}
+          emptyMessage="Користувачів не знайдено"
+          getRowId={(user) => String(user.id)}
+        />
       </div>
 
-      <UsersTableFooter
-        rangeLabel={rangeLabel}
-        page={page}
-        totalPages={totalPages}
-        onPageChange={onPageChange}
-      />
+      <UsersTableFooter rangeLabel={rangeLabel} page={page} totalPages={totalPages} />
     </div>
   );
 }
 
-function UsersTableHead() {
-  return (
-    <thead className="bg-surface-muted">
-      <tr className="text-text-heading h-12.5 text-left text-[14px] leading-4 font-bold">
-        {columns.map((column) => (
-          <th key={column.title} className={`${column.className} px-5`}>
-            {column.title}
-          </th>
-        ))}
-      </tr>
-    </thead>
-  );
-}
+type UsersTableFooterProps = { rangeLabel: string; page: number; totalPages: number };
 
-function UsersTableState({ isLoading, error }: { isLoading: boolean; error?: string }) {
-  return (
-    <tr>
-      <td
-        colSpan={columns.length}
-        className="desktop:h-107.5 h-82.5 px-5 text-center font-sans text-[14px] leading-4"
-      >
-        {isLoading && <span className="text-text-muted">Завантаження...</span>}
-        {error && <span className="text-text-error">{error}</span>}
-        {!isLoading && !error && (
-          <span className="text-text-muted">Користувачів не знайдено</span>
-        )}
-      </td>
-    </tr>
-  );
-}
+function UsersTableFooter({ rangeLabel, page, totalPages }: UsersTableFooterProps) {
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
 
-function UsersTableRow({ user }: { user: User }) {
-  return (
-    <tr className="border-border text-text-normal desktop:h-16 h-14 border-b text-[14px] leading-4 last:border-b-0">
-      <td className="px-5">#{user.id}</td>
+  const paginationItems = getPaginationItems(page, totalPages);
 
-      <td className="px-5 font-medium">
-        <span className="line-clamp-2">{getUserFullName(user)}</span>
-      </td>
+  function getPageHref(nextPage: number) {
+    const params = new URLSearchParams(searchParams.toString());
 
-      <td className="px-5">{user.phone || "-"}</td>
+    if (nextPage <= 1) {
+      params.delete("page");
+    } else {
+      params.set("page", String(nextPage));
+    }
 
-      <td className="px-5">
-        <span className="block truncate">{user.account?.email ?? "-"}</span>
-      </td>
+    const query = params.toString();
+    return query ? `${pathname}?${query}` : pathname;
+  }
 
-      <td className="px-5">
-        <UserStatusBadge status={user.account?.status} />
-      </td>
-
-      <td className="px-5">{formatUserDate(user.created_at)}</td>
-
-      <td className="px-5">
-        <Button
-          type="button"
-          className="bg-muted text-text-muted hover:bg-primary hover:text-primary-foreground h-6 rounded-full px-3 text-[12px] font-bold transition-colors"
-        >
-          Редагувати
-        </Button>
-      </td>
-    </tr>
-  );
-}
-
-function UsersTableFooter({
-  rangeLabel,
-  page,
-  totalPages,
-  onPageChange,
-}: {
-  rangeLabel: string;
-  page: number;
-  totalPages: number;
-  onPageChange: (page: number) => void;
-}) {
   return (
     <div className="border-border flex h-17 items-center justify-between border-t px-5">
       <p className="text-text-normal font-sans text-[14px] leading-4 font-bold">
         {rangeLabel}
       </p>
 
-      <div className="flex items-center gap-2">
-        <PaginationButton disabled={page <= 1} onClick={() => onPageChange(page - 1)}>
-          ‹
-        </PaginationButton>
+      <nav aria-label="Пагінація">
+        <ul className="flex items-center gap-2">
+          <li>
+            <PaginationButton
+              href={page > 1 ? getPageHref(page - 1) : undefined}
+              disabled={page <= 1}
+              ariaLabel="Попередня сторінка"
+            >
+              <ChevronLeft aria-hidden="true" className="size-4" />
+            </PaginationButton>
+          </li>
 
-        <Button
-          type="button"
-          className="bg-primary text-primary-foreground grid size-8 place-items-center rounded-lg font-bold"
-        >
-          {page}
-        </Button>
+          {paginationItems.map((item) => {
+            if (typeof item !== "number") {
+              return (
+                <li
+                  key={item}
+                  aria-hidden="true"
+                  className="text-text-muted grid size-8 place-items-center text-[14px] font-bold"
+                >
+                  ...
+                </li>
+              );
+            }
 
-        <PaginationButton
-          disabled={page >= totalPages}
-          onClick={() => onPageChange(page + 1)}
-        >
-          ›
-        </PaginationButton>
-      </div>
+            return (
+              <li key={item}>
+                <PaginationButton
+                  href={getPageHref(item)}
+                  active={item === page}
+                  ariaLabel={`Сторінка ${item}`}
+                >
+                  {item}
+                </PaginationButton>
+              </li>
+            );
+          })}
+
+          <li>
+            <PaginationButton
+              href={page < totalPages ? getPageHref(page + 1) : undefined}
+              disabled={page >= totalPages}
+              ariaLabel="Наступна сторінка"
+            >
+              <ChevronRight aria-hidden="true" className="size-4" />
+            </PaginationButton>
+          </li>
+        </ul>
+      </nav>
     </div>
   );
 }
 
+type PaginationButtonProps = {
+  href?: string;
+  children: ReactNode;
+  active?: boolean;
+  disabled?: boolean;
+  ariaLabel: string;
+};
+
 function PaginationButton({
+  href,
   children,
-  disabled,
-  onClick,
-}: {
-  children: string;
-  disabled: boolean;
-  onClick: () => void;
-}) {
+  active = false,
+  disabled = false,
+  ariaLabel,
+}: PaginationButtonProps) {
+  const className = [
+    "grid size-8 place-items-center rounded-lg text-[14px] font-bold transition-colors",
+    "focus-visible:outline-primary focus-visible:outline-2 focus-visible:outline-offset-2",
+    active
+      ? "bg-primary text-primary-foreground"
+      : "bg-muted text-primary hover:bg-primary hover:text-primary-foreground",
+    disabled ? "pointer-events-none opacity-40" : "",
+  ]
+    .filter(Boolean)
+    .join(" ");
+
+  if (disabled || !href) {
+    return (
+      <span aria-disabled="true" aria-label={ariaLabel} className={className}>
+        {children}
+      </span>
+    );
+  }
+
   return (
-    <Button
-      type="button"
-      disabled={disabled}
-      onClick={onClick}
-      className="bg-muted text-primary grid size-8 place-items-center rounded-lg disabled:opacity-40"
+    <Link
+      href={href}
+      aria-label={ariaLabel}
+      aria-current={active ? "page" : undefined}
+      scroll={false}
+      className={className}
     >
       {children}
-    </Button>
+    </Link>
   );
+}
+
+type PaginationItem = number | `ellipsis-${number}`;
+
+function getPaginationItems(
+  currentPage: number,
+  totalPages: number,
+  siblingCount = 2,
+): PaginationItem[] {
+  const normalizedTotal = Math.max(1, totalPages);
+  const normalizedCurrent = Math.min(Math.max(1, currentPage), normalizedTotal);
+  const visiblePages = new Set<number>([1, normalizedTotal]);
+
+  for (
+    let item = normalizedCurrent - siblingCount;
+    item <= normalizedCurrent + siblingCount;
+    item += 1
+  ) {
+    if (item >= 1 && item <= normalizedTotal) {
+      visiblePages.add(item);
+    }
+  }
+
+  const sortedPages = [...visiblePages].sort((first, second) => first - second);
+  const items: PaginationItem[] = [];
+
+  sortedPages.forEach((item, index) => {
+    const previousPage = sortedPages[index - 1];
+
+    if (previousPage !== undefined) {
+      const gap = item - previousPage;
+      if (gap === 2) {
+        items.push(previousPage + 1);
+      } else if (gap > 2) {
+        items.push(`ellipsis-${item}`);
+      }
+    }
+    items.push(item);
+  });
+  return items;
 }
