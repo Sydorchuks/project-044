@@ -1,4 +1,15 @@
+import { Breadcrumbs, type BreadcrumbItem } from "@/components/ui/breadcrumbs";
 import { CreateUserForm } from "./create-user-form";
+
+const breadcrumbs: BreadcrumbItem[] = [
+  {
+    label: "Користувачі",
+    href: "/users",
+  },
+  {
+    label: "Додати користувача",
+  },
+];
 
 export function CreateUserPage() {
   return (
@@ -9,11 +20,10 @@ export function CreateUserPage() {
             Додати користувача
           </h1>
 
-          <div className="ultra:text-[16px] ultra:leading-5 mt-3 flex items-center gap-2 font-sans text-[12px] leading-4">
-            <span className="text-text-muted">Користувачі</span>
-            <span className="text-text-muted">›</span>
-            <span className="text-text-heading font-bold">Додати користувача</span>
-          </div>
+          <Breadcrumbs
+            items={breadcrumbs}
+            className="ultra:text-[16px] ultra:leading-5 mt-3"
+          />
         </div>
 
         <div className="desktop:col-start-2 desktop:row-start-1 desktop:row-end-3 desktop:items-center desktop:pt-0 col-start-2 row-start-2 flex min-h-0 items-start pt-10 xl:pt-8">

@@ -55,8 +55,7 @@ const textFields: TextFieldConfig[] = [
 ];
 
 const fieldClassName =
-  "h-11 rounded-[10px] border-field-border bg-surface-muted px-4 font-sans text-[14px] leading-4 text-text-normal shadow-none placeholder:text-field-placeholder focus-visible:border-primary focus-visible:ring-primary/20 desktop:h-12.5 desktop:rounded-[12px] desktop:px-5 ultra:h-14 ultra:px-6";
-
+  "h-11 rounded-[10px] border border-field-border bg-surface-muted px-4 font-sans text-[14px] leading-4 text-text-normal shadow-none placeholder:text-field-placeholder focus-visible:border-primary focus-visible:ring-primary/20 desktop:h-12.5 desktop:rounded-[12px] desktop:px-5 ultra:h-14 ultra:px-6";
 const errorFieldClassName =
   "border-text-error text-text-error focus-visible:border-text-error focus-visible:ring-text-error/20";
 
