@@ -4,6 +4,7 @@ import { ChevronLeft, ChevronRight } from "lucide-react";
 import Link from "next/link";
 import { usePathname, useSearchParams } from "next/navigation";
 import { useMemo, type ReactNode } from "react";
+
 import { DataTable } from "@/components/data-table";
 import { createUsersTableColumns } from "@/components/users/users-table-columns";
 import type { UsersSort, UsersSortField } from "@/features/users/hooks/use-users-page";
@@ -57,7 +58,11 @@ export function UsersTable({
   );
 }
 
-type UsersTableFooterProps = { rangeLabel: string; page: number; totalPages: number };
+type UsersTableFooterProps = {
+  rangeLabel: string;
+  page: number;
+  totalPages: number;
+};
 
 function UsersTableFooter({ rangeLabel, page, totalPages }: UsersTableFooterProps) {
   const pathname = usePathname();
@@ -193,7 +198,7 @@ function getPaginationItems(
 ): PaginationItem[] {
   const normalizedTotal = Math.max(1, totalPages);
   const normalizedCurrent = Math.min(Math.max(1, currentPage), normalizedTotal);
-  const visiblePages = new Set<number>([1, normalizedTotal]);
+  const visiblePages = new Set<number>([1]);
 
   for (
     let item = normalizedCurrent - siblingCount;
@@ -205,21 +210,36 @@ function getPaginationItems(
     }
   }
 
-  const sortedPages = [...visiblePages].sort((first, second) => first - second);
-  const items: PaginationItem[] = [];
+  visiblePages.add(normalizedTotal);
 
-  sortedPages.forEach((item, index) => {
-    const previousPage = sortedPages[index - 1];
+  const pages = [...visiblePages];
 
-    if (previousPage !== undefined) {
-      const gap = item - previousPage;
-      if (gap === 2) {
-        items.push(previousPage + 1);
-      } else if (gap > 2) {
-        items.push(`ellipsis-${item}`);
-      }
+  if (pages.length === 1) {
+    return pages;
+  }
+
+  const lastIndex = pages.length - 1;
+  const items: PaginationItem[] = [pages[0]];
+  const firstGap = pages[1] - pages[0];
+
+  if (firstGap === 2) {
+    items.push(pages[0] + 1);
+  } else if (firstGap > 2) {
+    items.push(`ellipsis-${pages[1]}`);
+  }
+
+  items.push(...pages.slice(1, lastIndex));
+
+  if (lastIndex > 1) {
+    const lastGap = pages[lastIndex] - pages[lastIndex - 1];
+
+    if (lastGap === 2) {
+      items.push(pages[lastIndex - 1] + 1);
+    } else if (lastGap > 2) {
+      items.push(`ellipsis-${pages[lastIndex]}`);
     }
-    items.push(item);
-  });
+  }
+
+  items.push(pages[lastIndex]);
   return items;
 }

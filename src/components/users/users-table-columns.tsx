@@ -3,8 +3,8 @@ import { ChevronDown } from "lucide-react";
 import { dataTableFeatures } from "@/components/data-table";
 import { Button } from "@/components/ui/button";
 import { UserStatusBadge } from "@/components/users/user-status-badge";
-import { formatUserDate, getUserFullName } from "@/features/users/lib/user-formatters";
 import type { UsersSort, UsersSortField } from "@/features/users/hooks/use-users-page";
+import { formatUserDate, getUserFullName } from "@/features/users/lib/user-formatters";
 import type { User } from "@/features/users/types/user.types";
 import { cn } from "@/lib/utils";
 
@@ -12,7 +12,6 @@ type CreateUsersTableColumnsOptions = {
   sort: UsersSort;
   onSortChange: (field: UsersSortField) => void;
 };
-
 type SortableColumnHeaderProps = {
   label: string;
   field: UsersSortField;
@@ -68,16 +67,9 @@ export function createUsersTableColumns({
       },
     }),
 
-    columnHelper.accessor((user) => user.account.email, {
+    columnHelper.accessor((user) => user.account?.email, {
       id: "email",
-      header: () => (
-        <SortableColumnHeader
-          label="Ел. пошта"
-          field="email"
-          sort={sort}
-          onSortChange={onSortChange}
-        />
-      ),
+      header: "Ел. пошта",
       cell: ({ getValue }) => (
         <span className="block truncate">{getValue() || "-"}</span>
       ),
@@ -86,7 +78,7 @@ export function createUsersTableColumns({
       },
     }),
 
-    columnHelper.accessor((user) => user.account.status, {
+    columnHelper.accessor((user) => user.account?.status, {
       id: "status",
       header: "Статус",
       cell: ({ getValue }) => <UserStatusBadge status={getValue()} />,
