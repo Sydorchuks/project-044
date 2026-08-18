@@ -1,11 +1,10 @@
 "use client";
 
 import { useQuery } from "@tanstack/react-query";
-import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useCallback, useMemo } from "react";
-
 import { getUsers } from "@/features/users/api/users.api";
 import type { User } from "@/features/users/types/user.types";
+import { useQueryParams } from "@/hooks/use-query-params";
 
 const USERS_LIMIT = 8;
 const USERS_SORT_FIELDS = ["id", "first_name", "created_at"] as const;
@@ -13,13 +12,10 @@ const EMPTY_USERS: User[] = [];
 
 export type UsersSortField = (typeof USERS_SORT_FIELDS)[number];
 export type UsersSort = `${UsersSortField}:${1 | -1}`;
-
 const DEFAULT_USERS_SORT: UsersSort = "id:1";
 
 export function useUsersPage() {
-  const router = useRouter();
-  const pathname = usePathname();
-  const searchParams = useSearchParams();
+  const { searchParams, updateQueryParams } = useQueryParams();
 
   const search = (searchParams.get("search") ?? "").trim();
   const page = parsePage(searchParams.get("page"));
@@ -64,44 +60,25 @@ export function useUsersPage() {
     return `Показано ${from}-${to} із ${total}`;
   }, [skip, total, users.length]);
 
-  const updateSearchParams = useCallback(
-    (update: (params: URLSearchParams) => void) => {
-      const params = new URLSearchParams(searchParams.toString());
-
-      update(params);
-      const query = params.toString();
-
-      router.push(query ? `${pathname}?${query}` : pathname, {
-        scroll: false,
-      });
-    },
-    [pathname, router, searchParams],
-  );
-
   const handleSearch = useCallback(
     (value: string) => {
       const normalizedSearch = value.trim();
 
-      updateSearchParams((params) => {
-        if (normalizedSearch) {
-          params.set("search", normalizedSearch);
-        } else {
-          params.delete("search");
-        }
-
-        params.delete("page");
+      updateQueryParams({
+        search: normalizedSearch || null,
+        page: null,
       });
     },
-    [updateSearchParams],
+    [updateQueryParams],
   );
 
   const handleClear = useCallback(() => {
-    updateSearchParams((params) => {
-      params.delete("search");
-      params.delete("sort");
-      params.delete("page");
+    updateQueryParams({
+      search: null,
+      sort: null,
+      page: null,
     });
-  }, [updateSearchParams]);
+  }, [updateQueryParams]);
 
   const handleSort = useCallback(
     (field: UsersSortField) => {
@@ -110,17 +87,12 @@ export function useUsersPage() {
       const nextDirection = currentField === field && currentDirection === "1" ? -1 : 1;
       const nextSort = `${field}:${nextDirection}` as UsersSort;
 
-      updateSearchParams((params) => {
-        if (nextSort === DEFAULT_USERS_SORT) {
-          params.delete("sort");
-        } else {
-          params.set("sort", nextSort);
-        }
-
-        params.delete("page");
+      updateQueryParams({
+        sort: nextSort === DEFAULT_USERS_SORT ? null : nextSort,
+        page: null,
       });
     },
-    [sort, updateSearchParams],
+    [sort, updateQueryParams],
   );
 
   return {
@@ -156,6 +128,5 @@ function parseSort(value: string | null): UsersSort {
   if (extraPart !== undefined || !isValidField || !isValidDirection) {
     return DEFAULT_USERS_SORT;
   }
-
   return `${field}:${direction}` as UsersSort;
 }
