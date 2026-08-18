@@ -16,6 +16,11 @@ export const navigationItems: NavigationItem[] = [
     icon: "/icons/clients.svg",
   },
   {
+    title: "Користувачі",
+    href: "/users",
+    icon: "/icons/mugshot.svg",
+  },
+  {
     title: "Запити",
     href: "/requests",
     icon: "/icons/refresh.svg",
