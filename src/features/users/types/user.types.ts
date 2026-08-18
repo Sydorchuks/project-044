@@ -44,3 +44,19 @@ export type GetUsersParams = {
   search?: string;
   sort?: string;
 };
+
+export type CreateUserPayload = {
+  email: string;
+  roleId: number;
+  user: {
+    first_name: string;
+    last_name: string;
+    phone: string;
+    domain_url: string;
+    description?: string;
+  };
+};
+
+export type CreateUserResponse = {
+  reset_token?: string;
+};

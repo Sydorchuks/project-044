@@ -1,7 +1,9 @@
 "use client";
 
 import { Download, Plus, Search } from "lucide-react";
+import { useRouter } from "next/navigation";
 import type { FormEvent } from "react";
+
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { UsersTable } from "@/components/users/users-table";
@@ -14,6 +16,8 @@ const SECONDARY_BUTTON_CLASS_NAME =
   "bg-action-muted text-primary-foreground hover:bg-action-muted/80";
 
 export function UsersPage() {
+  const router = useRouter();
+
   const {
     users,
     search,
@@ -27,6 +31,10 @@ export function UsersPage() {
     handleClear,
     handleSort,
   } = useUsersPage();
+
+  function handleCreateUser() {
+    router.push("/users/create");
+  }
 
   function handleSearchSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -100,6 +108,7 @@ export function UsersPage() {
 
             <Button
               type="button"
+              onClick={handleCreateUser}
               className={cn(CONTROL_BUTTON_CLASS_NAME, "desktop:px-5 px-4")}
             >
               <Plus aria-hidden="true" className="size-4" />

@@ -7,7 +7,10 @@ import { useMemo, type ReactNode } from "react";
 
 import { DataTable } from "@/components/data-table";
 import { createUsersTableColumns } from "@/components/users/users-table-columns";
-import type { UsersSort, UsersSortField } from "@/features/users/hooks/use-users-page";
+import type {
+  UsersSort,
+  UsersSortField,
+} from "@/features/users/hooks/use-users-page";
 import type { User } from "@/features/users/types/user.types";
 
 type UsersTableProps = {
@@ -53,7 +56,11 @@ export function UsersTable({
         />
       </div>
 
-      <UsersTableFooter rangeLabel={rangeLabel} page={page} totalPages={totalPages} />
+      <UsersTableFooter
+        rangeLabel={rangeLabel}
+        page={page}
+        totalPages={totalPages}
+      />
     </div>
   );
 }
@@ -64,14 +71,23 @@ type UsersTableFooterProps = {
   totalPages: number;
 };
 
-function UsersTableFooter({ rangeLabel, page, totalPages }: UsersTableFooterProps) {
+function UsersTableFooter({
+  rangeLabel,
+  page,
+  totalPages,
+}: UsersTableFooterProps) {
   const pathname = usePathname();
   const searchParams = useSearchParams();
 
-  const paginationItems = getPaginationItems(page, totalPages);
+  const paginationItems = getPaginationItems(
+    page,
+    totalPages,
+  );
 
   function getPageHref(nextPage: number) {
-    const params = new URLSearchParams(searchParams.toString());
+    const params = new URLSearchParams(
+      searchParams.toString(),
+    );
 
     if (nextPage <= 1) {
       params.delete("page");
@@ -80,6 +96,7 @@ function UsersTableFooter({ rangeLabel, page, totalPages }: UsersTableFooterProp
     }
 
     const query = params.toString();
+
     return query ? `${pathname}?${query}` : pathname;
   }
 
@@ -93,11 +110,18 @@ function UsersTableFooter({ rangeLabel, page, totalPages }: UsersTableFooterProp
         <ul className="flex items-center gap-2">
           <li>
             <PaginationButton
-              href={page > 1 ? getPageHref(page - 1) : undefined}
+              href={
+                page > 1
+                  ? getPageHref(page - 1)
+                  : undefined
+              }
               disabled={page <= 1}
               ariaLabel="Попередня сторінка"
             >
-              <ChevronLeft aria-hidden="true" className="size-4" />
+              <ChevronLeft
+                aria-hidden="true"
+                className="size-4"
+              />
             </PaginationButton>
           </li>
 
@@ -129,11 +153,18 @@ function UsersTableFooter({ rangeLabel, page, totalPages }: UsersTableFooterProp
 
           <li>
             <PaginationButton
-              href={page < totalPages ? getPageHref(page + 1) : undefined}
+              href={
+                page < totalPages
+                  ? getPageHref(page + 1)
+                  : undefined
+              }
               disabled={page >= totalPages}
               ariaLabel="Наступна сторінка"
             >
-              <ChevronRight aria-hidden="true" className="size-4" />
+              <ChevronRight
+                aria-hidden="true"
+                className="size-4"
+              />
             </PaginationButton>
           </li>
         </ul>
@@ -170,7 +201,11 @@ function PaginationButton({
 
   if (disabled || !href) {
     return (
-      <span aria-disabled="true" aria-label={ariaLabel} className={className}>
+      <span
+        aria-disabled="true"
+        aria-label={ariaLabel}
+        className={className}
+      >
         {children}
       </span>
     );
@@ -197,7 +232,10 @@ function getPaginationItems(
   siblingCount = 2,
 ): PaginationItem[] {
   const normalizedTotal = Math.max(1, totalPages);
-  const normalizedCurrent = Math.min(Math.max(1, currentPage), normalizedTotal);
+  const normalizedCurrent = Math.min(
+    Math.max(1, currentPage),
+    normalizedTotal,
+  );
   const visiblePages = new Set<number>([1]);
 
   for (
@@ -231,7 +269,8 @@ function getPaginationItems(
   items.push(...pages.slice(1, lastIndex));
 
   if (lastIndex > 1) {
-    const lastGap = pages[lastIndex] - pages[lastIndex - 1];
+    const lastGap =
+      pages[lastIndex] - pages[lastIndex - 1];
 
     if (lastGap === 2) {
       items.push(pages[lastIndex - 1] + 1);
@@ -241,5 +280,6 @@ function getPaginationItems(
   }
 
   items.push(pages[lastIndex]);
+
   return items;
 }
