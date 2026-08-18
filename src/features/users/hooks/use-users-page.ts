@@ -3,18 +3,13 @@
 import { useQuery } from "@tanstack/react-query";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useCallback, useMemo } from "react";
+
 import { getUsers } from "@/features/users/api/users.api";
-import { getUserFullName } from "@/features/users/lib/user-formatters";
 import type { User } from "@/features/users/types/user.types";
 
 const USERS_LIMIT = 8;
-const USERS_SORT_FIELDS = ["id", "first_name", "email", "created_at"] as const;
+const USERS_SORT_FIELDS = ["id", "first_name", "created_at"] as const;
 const EMPTY_USERS: User[] = [];
-
-const usersCollator = new Intl.Collator("uk-UA", {
-  numeric: true,
-  sensitivity: "base",
-});
 
 export type UsersSortField = (typeof USERS_SORT_FIELDS)[number];
 export type UsersSort = `${UsersSortField}:${1 | -1}`;
@@ -42,6 +37,7 @@ export function useUsersPage() {
         limit: USERS_LIMIT,
         skip,
         search,
+        sort,
       },
     ],
     queryFn: () =>
@@ -49,52 +45,24 @@ export function useUsersPage() {
         limit: USERS_LIMIT,
         skip,
         search: search || undefined,
-        sort: "id:1",
+        sort,
       }),
   });
 
   const users = usersResponse?.data ?? EMPTY_USERS;
-
-  const sortedUsers = useMemo(() => {
-    const [field, directionValue] = sort.split(":");
-    const direction = directionValue === "-1" ? -1 : 1;
-
-    return [...users].sort((firstUser, secondUser) => {
-      switch (field) {
-        case "id":
-          return (firstUser.id - secondUser.id) * direction;
-        case "first_name":
-          return (
-            compareText(getUserFullName(firstUser), getUserFullName(secondUser)) *
-            direction
-          );
-        case "email":
-          return (
-            compareText(
-              firstUser.account?.email ?? "",
-              secondUser.account?.email ?? "",
-            ) * direction
-          );
-        case "created_at":
-          return compareDates(firstUser.created_at, secondUser.created_at) * direction;
-        default:
-          return 0;
-      }
-    });
-  }, [sort, users]);
-
   const total = usersResponse?.filters.total ?? 0;
   const totalPages = Math.max(1, Math.ceil(total / USERS_LIMIT));
+
   const rangeLabel = useMemo(() => {
-    if (!total || sortedUsers.length === 0) {
+    if (!total || users.length === 0) {
       return "Показано 0 з 0";
     }
 
     const from = skip + 1;
-    const to = Math.min(skip + sortedUsers.length, total);
+    const to = Math.min(skip + users.length, total);
 
     return `Показано ${from}-${to} із ${total}`;
-  }, [skip, total, sortedUsers.length]);
+  }, [skip, total, users.length]);
 
   const updateSearchParams = useCallback(
     (update: (params: URLSearchParams) => void) => {
@@ -102,7 +70,10 @@ export function useUsersPage() {
 
       update(params);
       const query = params.toString();
-      router.push(query ? `${pathname}?${query}` : pathname, { scroll: false });
+
+      router.push(query ? `${pathname}?${query}` : pathname, {
+        scroll: false,
+      });
     },
     [pathname, router, searchParams],
   );
@@ -117,6 +88,7 @@ export function useUsersPage() {
         } else {
           params.delete("search");
         }
+
         params.delete("page");
       });
     },
@@ -144,6 +116,7 @@ export function useUsersPage() {
         } else {
           params.set("sort", nextSort);
         }
+
         params.delete("page");
       });
     },
@@ -151,7 +124,7 @@ export function useUsersPage() {
   );
 
   return {
-    users: sortedUsers,
+    users,
     search,
     sort,
     page,
@@ -183,13 +156,6 @@ function parseSort(value: string | null): UsersSort {
   if (extraPart !== undefined || !isValidField || !isValidDirection) {
     return DEFAULT_USERS_SORT;
   }
+
   return `${field}:${direction}` as UsersSort;
-}
-
-function compareText(firstValue: string, secondValue: string) {
-  return usersCollator.compare(firstValue.trim(), secondValue.trim());
-}
-
-function compareDates(firstValue: string, secondValue: string) {
-  return new Date(firstValue).getTime() - new Date(secondValue).getTime();
 }

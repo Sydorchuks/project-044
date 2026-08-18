@@ -13,7 +13,6 @@ type CreateUsersTableColumnsOptions = {
   sort: UsersSort;
   onSortChange: (field: UsersSortField) => void;
 };
-
 type SortableColumnHeaderProps = {
   label: string;
   field: UsersSortField;
@@ -69,7 +68,7 @@ export function createUsersTableColumns({
       },
     }),
 
-    columnHelper.accessor((user) => user.account.email, {
+    columnHelper.accessor((user) => user.account?.email, {
       id: "email",
       header: "Ел. пошта",
       cell: ({ getValue }) => (
@@ -80,7 +79,7 @@ export function createUsersTableColumns({
       },
     }),
 
-    columnHelper.accessor((user) => user.account.status, {
+    columnHelper.accessor((user) => user.account?.status, {
       id: "status",
       header: "Статус",
       cell: ({ getValue }) => <UserStatusBadge status={getValue()} />,
