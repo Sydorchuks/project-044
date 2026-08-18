@@ -2,8 +2,8 @@
 
 import { Download, Plus, Search } from "lucide-react";
 import { useRouter } from "next/navigation";
-
 import type { FormEvent } from "react";
+
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { UsersTable } from "@/components/users/users-table";
@@ -17,6 +17,7 @@ const SECONDARY_BUTTON_CLASS_NAME =
 
 export function UsersPage() {
   const router = useRouter();
+
   const {
     users,
     search,
@@ -33,6 +34,8 @@ export function UsersPage() {
 
   function handleCreateUser() {
     router.push("/users/create");
+  }
+
   function handleSearchSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
 
