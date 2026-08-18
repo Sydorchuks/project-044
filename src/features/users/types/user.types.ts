@@ -15,7 +15,7 @@ export type User = {
   description?: string | null;
   created_at: string;
   updated_at: string;
-  account?: {
+  account: {
     id: number;
     email: string;
     status: UserStatus;
