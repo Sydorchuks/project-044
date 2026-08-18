@@ -1,9 +1,17 @@
-import { Plus } from "lucide-react";
-import { Button } from "@/components/ui/button";
+"use client";
+
+import { ChevronLeft, ChevronRight } from "lucide-react";
+import Link from "next/link";
+import { usePathname, useSearchParams } from "next/navigation";
+import { useMemo, type ReactNode } from "react";
+
+import { DataTable } from "@/components/data-table";
+import { createUsersTableColumns } from "@/components/users/users-table-columns";
+import type {
+  UsersSort,
+  UsersSortField,
+} from "@/features/users/hooks/use-users-page";
 import type { User } from "@/features/users/types/user.types";
-import { formatUserDate, getUserFullName } from "@/features/users/lib/user-formatters";
-import { UserStatusBadge } from "./user-status-badge";
-import { cn } from "@/lib/utils";
 
 type UsersTableProps = {
   users: User[];
@@ -12,19 +20,9 @@ type UsersTableProps = {
   rangeLabel: string;
   page: number;
   totalPages: number;
-  onPageChange: (page: number) => void;
-  onCreateUser: () => void;
+  sort: UsersSort;
+  onSortChange: (field: UsersSortField) => void;
 };
-
-const columns = [
-  { title: "ID", className: "w-[8%]" },
-  { title: "Імʼя", className: "w-[18%]" },
-  { title: "Телефон", className: "w-[17%]" },
-  { title: "Ел. пошта", className: "w-[24%]" },
-  { title: "Статус", className: "w-[13%]" },
-  { title: "Створено", className: "w-[13%]" },
-  { title: "Дія", className: "w-[12%]" },
-];
 
 export function UsersTable({
   users,
@@ -33,156 +31,255 @@ export function UsersTable({
   rangeLabel,
   page,
   totalPages,
-  onPageChange,
-  onCreateUser,
+  sort,
+  onSortChange,
 }: UsersTableProps) {
-  const hasStateRow = isLoading || error || users.length === 0;
+  const columns = useMemo(
+    () =>
+      createUsersTableColumns({
+        sort,
+        onSortChange,
+      }),
+    [sort, onSortChange],
+  );
 
   return (
     <div className="bg-background w-full overflow-hidden rounded-3xl shadow-sm">
       <div className="overflow-x-auto">
-        <table className="desktop:min-w-245 w-full min-w-190 table-fixed border-collapse font-sans">
-          <thead className="bg-surface-muted">
-            <tr className="text-text-heading h-12.5 text-left text-[14px] leading-4 font-bold">
-              {columns.map((column) => (
-                <th key={column.title} className={cn(column.className, "px-5")}>
-                  {column.title}
-                </th>
-              ))}
-            </tr>
-          </thead>
-
-          <tbody>
-            {hasStateRow ? (
-              <UsersTableState
-                isLoading={isLoading}
-                error={error}
-                onCreateUser={onCreateUser}
-              />
-            ) : (
-              users.map((user) => (
-                <tr
-                  key={user.id}
-                  className="border-border text-text-normal desktop:h-16 h-14 border-b text-[14px] leading-4 last:border-b-0"
-                >
-                  <td className="px-5">#{user.id}</td>
-
-                  <td className="px-5 font-medium">
-                    <span className="line-clamp-2">{getUserFullName(user)}</span>
-                  </td>
-
-                  <td className="px-5">{user.phone || "-"}</td>
-
-                  <td className="px-5">
-                    <span className="block truncate">{user.account?.email ?? "-"}</span>
-                  </td>
-
-                  <td className="px-5">
-                    <UserStatusBadge status={user.account?.status ?? ""} />
-                  </td>
-
-                  <td className="px-5">{formatUserDate(user.created_at)}</td>
-
-                  <td className="px-5">
-                    <Button
-                      type="button"
-                      variant="secondary"
-                      className="bg-muted text-text-muted hover:bg-primary hover:text-primary-foreground h-6 rounded-full px-3 font-sans text-[12px] font-bold"
-                    >
-                      Редагувати
-                    </Button>
-                  </td>
-                </tr>
-              ))
-            )}
-          </tbody>
-        </table>
+        <DataTable<User>
+          data={users}
+          columns={columns}
+          isLoading={isLoading}
+          error={error}
+          emptyMessage="Користувачів не знайдено"
+          getRowId={(user) => String(user.id)}
+        />
       </div>
 
-      <div className="border-border flex h-17 items-center justify-between border-t px-5">
-        <p className="text-text-normal font-sans text-[14px] leading-4 font-bold">
-          {rangeLabel}
-        </p>
-
-        <div className="flex items-center gap-2">
-          <PaginationButton disabled={page <= 1} onClick={() => onPageChange(page - 1)}>
-            ‹
-          </PaginationButton>
-
-          <Button type="button" className="size-8 rounded-lg p-0 font-sans font-bold">
-            {page}
-          </Button>
-
-          <PaginationButton
-            disabled={page >= totalPages}
-            onClick={() => onPageChange(page + 1)}
-          >
-            ›
-          </PaginationButton>
-        </div>
-      </div>
+      <UsersTableFooter
+        rangeLabel={rangeLabel}
+        page={page}
+        totalPages={totalPages}
+      />
     </div>
   );
 }
 
-function UsersTableState({
-  isLoading,
-  error,
-  onCreateUser,
-}: {
-  isLoading: boolean;
-  error?: string;
-  onCreateUser: () => void;
-}) {
+type UsersTableFooterProps = {
+  rangeLabel: string;
+  page: number;
+  totalPages: number;
+};
+
+function UsersTableFooter({
+  rangeLabel,
+  page,
+  totalPages,
+}: UsersTableFooterProps) {
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+
+  const paginationItems = getPaginationItems(
+    page,
+    totalPages,
+  );
+
+  function getPageHref(nextPage: number) {
+    const params = new URLSearchParams(
+      searchParams.toString(),
+    );
+
+    if (nextPage <= 1) {
+      params.delete("page");
+    } else {
+      params.set("page", String(nextPage));
+    }
+
+    const query = params.toString();
+
+    return query ? `${pathname}?${query}` : pathname;
+  }
+
   return (
-    <tr>
-      <td
-        colSpan={columns.length}
-        className="desktop:h-107.5 h-82.5 px-5 text-center font-sans text-[14px] leading-4"
-      >
-        {isLoading && <span className="text-text-muted">Завантаження...</span>}
+    <div className="border-border flex h-17 items-center justify-between border-t px-5">
+      <p className="text-text-normal font-sans text-[14px] leading-4 font-bold">
+        {rangeLabel}
+      </p>
 
-        {error && <span className="text-text-error">{error}</span>}
-
-        {!isLoading && !error && (
-          <div className="flex flex-col items-center justify-center gap-4">
-            <p className="text-primary desktop:text-[18px] font-sans text-[16px] leading-5 font-bold">
-              Нажаль ви ще не створили жодного користувача
-            </p>
-
-            <Button
-              type="button"
-              onClick={onCreateUser}
-              className="h-8 rounded-3xl px-4 font-sans text-[12px] font-bold"
+      <nav aria-label="Пагінація">
+        <ul className="flex items-center gap-2">
+          <li>
+            <PaginationButton
+              href={
+                page > 1
+                  ? getPageHref(page - 1)
+                  : undefined
+              }
+              disabled={page <= 1}
+              ariaLabel="Попередня сторінка"
             >
-              <Plus className="size-3.5" />
-              Додати користувача
-            </Button>
-          </div>
-        )}
-      </td>
-    </tr>
+              <ChevronLeft
+                aria-hidden="true"
+                className="size-4"
+              />
+            </PaginationButton>
+          </li>
+
+          {paginationItems.map((item) => {
+            if (typeof item !== "number") {
+              return (
+                <li
+                  key={item}
+                  aria-hidden="true"
+                  className="text-text-muted grid size-8 place-items-center text-[14px] font-bold"
+                >
+                  ...
+                </li>
+              );
+            }
+
+            return (
+              <li key={item}>
+                <PaginationButton
+                  href={getPageHref(item)}
+                  active={item === page}
+                  ariaLabel={`Сторінка ${item}`}
+                >
+                  {item}
+                </PaginationButton>
+              </li>
+            );
+          })}
+
+          <li>
+            <PaginationButton
+              href={
+                page < totalPages
+                  ? getPageHref(page + 1)
+                  : undefined
+              }
+              disabled={page >= totalPages}
+              ariaLabel="Наступна сторінка"
+            >
+              <ChevronRight
+                aria-hidden="true"
+                className="size-4"
+              />
+            </PaginationButton>
+          </li>
+        </ul>
+      </nav>
+    </div>
   );
 }
 
+type PaginationButtonProps = {
+  href?: string;
+  children: ReactNode;
+  active?: boolean;
+  disabled?: boolean;
+  ariaLabel: string;
+};
+
 function PaginationButton({
+  href,
   children,
-  disabled,
-  onClick,
-}: {
-  children: string;
-  disabled: boolean;
-  onClick: () => void;
-}) {
+  active = false,
+  disabled = false,
+  ariaLabel,
+}: PaginationButtonProps) {
+  const className = [
+    "grid size-8 place-items-center rounded-lg text-[14px] font-bold transition-colors",
+    "focus-visible:outline-primary focus-visible:outline-2 focus-visible:outline-offset-2",
+    active
+      ? "bg-primary text-primary-foreground"
+      : "bg-muted text-primary hover:bg-primary hover:text-primary-foreground",
+    disabled ? "pointer-events-none opacity-40" : "",
+  ]
+    .filter(Boolean)
+    .join(" ");
+
+  if (disabled || !href) {
+    return (
+      <span
+        aria-disabled="true"
+        aria-label={ariaLabel}
+        className={className}
+      >
+        {children}
+      </span>
+    );
+  }
+
   return (
-    <Button
-      type="button"
-      variant="secondary"
-      disabled={disabled}
-      onClick={onClick}
-      className="bg-muted text-primary size-8 rounded-lg p-0 font-sans disabled:opacity-40"
+    <Link
+      href={href}
+      aria-label={ariaLabel}
+      aria-current={active ? "page" : undefined}
+      scroll={false}
+      className={className}
     >
       {children}
-    </Button>
+    </Link>
   );
+}
+
+type PaginationItem = number | `ellipsis-${number}`;
+
+function getPaginationItems(
+  currentPage: number,
+  totalPages: number,
+  siblingCount = 2,
+): PaginationItem[] {
+  const normalizedTotal = Math.max(1, totalPages);
+  const normalizedCurrent = Math.min(
+    Math.max(1, currentPage),
+    normalizedTotal,
+  );
+  const visiblePages = new Set<number>([1]);
+
+  for (
+    let item = normalizedCurrent - siblingCount;
+    item <= normalizedCurrent + siblingCount;
+    item += 1
+  ) {
+    if (item >= 1 && item <= normalizedTotal) {
+      visiblePages.add(item);
+    }
+  }
+
+  visiblePages.add(normalizedTotal);
+
+  const pages = [...visiblePages];
+
+  if (pages.length === 1) {
+    return pages;
+  }
+
+  const lastIndex = pages.length - 1;
+  const items: PaginationItem[] = [pages[0]];
+  const firstGap = pages[1] - pages[0];
+
+  if (firstGap === 2) {
+    items.push(pages[0] + 1);
+  } else if (firstGap > 2) {
+    items.push(`ellipsis-${pages[1]}`);
+  }
+
+  items.push(...pages.slice(1, lastIndex));
+
+  if (lastIndex > 1) {
+    const lastGap =
+      pages[lastIndex] - pages[lastIndex - 1];
+
+    if (lastGap === 2) {
+      items.push(pages[lastIndex - 1] + 1);
+    } else if (lastGap > 2) {
+      items.push(`ellipsis-${pages[lastIndex]}`);
+    }
+  }
+
+  items.push(pages[lastIndex]);
+
+  return items;
 }

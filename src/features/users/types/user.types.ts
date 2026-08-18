@@ -1,4 +1,9 @@
-export type UserStatus = "ACTIVE" | "BLOCKED" | "DELETED" | "PENDING";
+export enum UserStatus {
+  ACTIVE = "ACTIVE",
+  BLOCKED = "BLOCKED",
+  DELETED = "DELETED",
+  PENDING = "PENDING",
+}
 
 export type User = {
   id: number;

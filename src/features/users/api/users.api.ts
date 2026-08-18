@@ -1,27 +1,46 @@
 import { isAxiosError } from "axios";
 
-import { apiClient } from "@/lib/api/client";
+import { usersResponseSchema } from "@/features/users/schemas/user.schema";
 import type {
   CreateUserPayload,
   CreateUserResponse,
   GetUsersParams,
   UsersResponse,
 } from "@/features/users/types/user.types";
+import { apiClient } from "@/lib/api/client";
 
-export async function getUsers(params: GetUsersParams = {}) {
-  const { data } = await apiClient.get<UsersResponse>("api/users", { params });
-  return data;
+export async function getUsers(
+  params: GetUsersParams = {},
+): Promise<UsersResponse> {
+  const { data } = await apiClient.get<unknown>(
+    "api/users",
+    {
+      params,
+    },
+  );
+
+  return usersResponseSchema.parse(data);
 }
 
 export async function createUser(
   payload: CreateUserPayload,
 ): Promise<CreateUserResponse> {
   try {
-    const { data } = await apiClient.post<CreateUserResponse>("api/users", payload);
+    const { data } =
+      await apiClient.post<CreateUserResponse>(
+        "api/users",
+        payload,
+      );
+
     return data;
   } catch (error) {
-    if (isAxiosError(error) && error.response?.status === 500) {
-      const createdUser = await findCreatedUser(payload.email);
+    if (
+      isAxiosError(error) &&
+      error.response?.status === 500
+    ) {
+      const createdUser = await findCreatedUser(
+        payload.email,
+      );
 
       if (createdUser) {
         return {};
@@ -40,7 +59,9 @@ async function findCreatedUser(email: string) {
       sort: "id:-1",
     });
 
-    return users.data.find((user) => user.account?.email === email);
+    return users.data.find(
+      (user) => user.account?.email === email,
+    );
   } catch {
     return undefined;
   }

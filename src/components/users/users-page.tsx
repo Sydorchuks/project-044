@@ -3,17 +3,24 @@
 import { Download, Plus, Search } from "lucide-react";
 import { useRouter } from "next/navigation";
 
+import type { FormEvent } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { UsersTable } from "@/components/users/users-table";
 import { useUsersPage } from "@/features/users/hooks/use-users-page";
-import { UsersTable } from "./users-table";
+import { cn } from "@/lib/utils";
+
+const CONTROL_BUTTON_CLASS_NAME =
+  "desktop:h-11 h-10 rounded-3xl font-sans text-[14px] font-bold";
+const SECONDARY_BUTTON_CLASS_NAME =
+  "bg-action-muted text-primary-foreground hover:bg-action-muted/80";
 
 export function UsersPage() {
   const router = useRouter();
   const {
     users,
     search,
-    setSearch,
+    sort,
     page,
     totalPages,
     rangeLabel,
@@ -21,11 +28,18 @@ export function UsersPage() {
     error,
     handleSearch,
     handleClear,
-    setPage,
+    handleSort,
   } = useUsersPage();
 
   function handleCreateUser() {
     router.push("/users/create");
+  function handleSearchSubmit(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+
+    const formData = new FormData(event.currentTarget);
+    const searchValue = String(formData.get("search") ?? "");
+
+    handleSearch(searchValue);
   }
 
   return (
@@ -37,22 +51,25 @@ export function UsersPage() {
               Користувачі
             </h1>
 
-            <div className="flex items-center gap-4">
+            <form className="flex items-center gap-4" onSubmit={handleSearchSubmit}>
               <div className="desktop:max-w-117.5 ultra:max-w-140 relative w-full max-w-97">
-                <Search className="text-text-muted pointer-events-none absolute top-1/2 left-4 size-5 -translate-y-1/2" />
+                <Search
+                  aria-hidden="true"
+                  className="text-text-muted pointer-events-none absolute top-1/2 left-4 size-5 -translate-y-1/2"
+                />
 
                 <Input
-                  value={search}
-                  onChange={(event) => setSearch(event.target.value)}
+                  key={search}
+                  name="search"
+                  defaultValue={search}
                   placeholder="Пошук..."
                   className="desktop:h-11 h-10 rounded-3xl pl-11"
                 />
               </div>
 
               <Button
-                type="button"
-                onClick={handleSearch}
-                className="desktop:h-11 desktop:w-36 h-10 w-31 rounded-3xl font-sans text-[14px] font-bold"
+                type="submit"
+                className={cn(CONTROL_BUTTON_CLASS_NAME, "desktop:w-36 w-31")}
               >
                 Пошук
               </Button>
@@ -61,29 +78,37 @@ export function UsersPage() {
                 type="button"
                 variant="secondary"
                 onClick={handleClear}
-                className="bg-action-muted text-primary-foreground hover:bg-action-muted/80 desktop:h-11 desktop:w-32 h-10 w-28 rounded-3xl font-sans text-[14px] font-bold"
+                className={cn(
+                  CONTROL_BUTTON_CLASS_NAME,
+                  SECONDARY_BUTTON_CLASS_NAME,
+                  "desktop:w-32 w-28",
+                )}
               >
                 Очистити
               </Button>
-            </div>
+            </form>
           </div>
 
           <div className="flex items-center gap-3">
             <Button
               type="button"
               variant="secondary"
-              className="bg-action-muted text-primary-foreground hover:bg-action-muted/80 desktop:h-11 desktop:px-5 h-10 rounded-3xl px-4 font-sans text-[14px] font-bold"
+              className={cn(
+                CONTROL_BUTTON_CLASS_NAME,
+                SECONDARY_BUTTON_CLASS_NAME,
+                "desktop:px-5 px-4",
+              )}
             >
-              <Download className="size-4" />
+              <Download aria-hidden="true" className="size-4" />
               Експорт
             </Button>
 
             <Button
               type="button"
               onClick={handleCreateUser}
-              className="desktop:h-11 desktop:px-5 h-10 rounded-3xl px-4 font-sans text-[14px] font-bold"
+              className={cn(CONTROL_BUTTON_CLASS_NAME, "desktop:px-5 px-4")}
             >
-              <Plus className="size-4" />
+              <Plus aria-hidden="true" className="size-4" />
               Додати користувача
             </Button>
           </div>
@@ -96,8 +121,8 @@ export function UsersPage() {
           rangeLabel={rangeLabel}
           page={page}
           totalPages={totalPages}
-          onPageChange={setPage}
-          onCreateUser={handleCreateUser}
+          sort={sort}
+          onSortChange={handleSort}
         />
       </div>
     </section>

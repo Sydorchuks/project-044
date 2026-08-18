@@ -1,4 +1,11 @@
-import type { User, UserStatus } from "@/features/users/types/user.types";
+import { UserStatus, type User } from "@/features/users/types/user.types";
+
+const USER_STATUS_LABELS: Record<UserStatus, string> = {
+  [UserStatus.ACTIVE]: "Активний",
+  [UserStatus.BLOCKED]: "Заблоковано",
+  [UserStatus.DELETED]: "Видалений",
+  [UserStatus.PENDING]: "Розглядається",
+};
 
 export function getUserFullName(user: User) {
   const fullName = [user.first_name, user.last_name].filter(Boolean).join(" ");
@@ -16,19 +23,6 @@ export function formatUserDate(date?: string) {
   }).format(new Date(date));
 }
 
-export function normalizeUserStatus(status?: string): UserStatus {
-  return (status?.toUpperCase() || "PENDING") as UserStatus;
-}
-
-export function getUserStatusLabel(status?: string) {
-  const normalizedStatus = normalizeUserStatus(status);
-
-  const labels: Record<UserStatus, string> = {
-    ACTIVE: "Активний",
-    BLOCKED: "Заблоковано",
-    DELETED: "Видалений",
-    PENDING: "Розглядається",
-  };
-
-  return labels[normalizedStatus] ?? "Розглядається";
+export function getUserStatusLabel(status: UserStatus) {
+  return USER_STATUS_LABELS[status];
 }
