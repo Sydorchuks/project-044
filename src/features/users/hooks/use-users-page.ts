@@ -2,12 +2,18 @@
 
 import { useQuery } from "@tanstack/react-query";
 import { useCallback, useMemo } from "react";
+
 import { getUsers } from "@/features/users/api/users.api";
 import type { User } from "@/features/users/types/user.types";
 import { useQueryParams } from "@/hooks/use-query-params";
 
 const USERS_LIMIT = 8;
 const USERS_SORT_FIELDS = ["id", "first_name", "created_at"] as const;
+const USERS_SEARCH_PARAMS_CONFIG = {
+  search: "single",
+  page: "single",
+  sort: "single",
+} as const;
 const EMPTY_USERS: User[] = [];
 
 export type UsersSortField = (typeof USERS_SORT_FIELDS)[number];
@@ -15,11 +21,15 @@ export type UsersSort = `${UsersSortField}:${1 | -1}`;
 const DEFAULT_USERS_SORT: UsersSort = "id:1";
 
 export function useUsersPage() {
-  const { searchParams, updateQueryParams } = useQueryParams();
+  const { searchParams, updateQueryParams } = useQueryParams(
+    USERS_SEARCH_PARAMS_CONFIG,
+  );
 
-  const search = (searchParams.get("search") ?? "").trim();
-  const page = parsePage(searchParams.get("page"));
-  const sort = parseSort(searchParams.get("sort"));
+  const { search: searchValue, page: pageValue, sort: sortValue } = searchParams;
+
+  const search = (searchValue ?? "").trim();
+  const page = parsePage(pageValue);
+  const sort = parseSort(sortValue);
   const skip = (page - 1) * USERS_LIMIT;
 
   const {
@@ -110,13 +120,13 @@ export function useUsersPage() {
   };
 }
 
-function parsePage(value: string | null) {
+function parsePage(value: string | undefined) {
   const parsedPage = Number(value ?? "1");
 
   return Number.isSafeInteger(parsedPage) && parsedPage > 0 ? parsedPage : 1;
 }
 
-function parseSort(value: string | null): UsersSort {
+function parseSort(value: string | undefined): UsersSort {
   if (!value) {
     return DEFAULT_USERS_SORT;
   }

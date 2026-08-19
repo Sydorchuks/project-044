@@ -1,39 +1,71 @@
 "use client";
 
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { useCallback } from "react";
+import { useCallback, useMemo } from "react";
 
-type QueryParamValue = string | number | boolean | null | undefined;
+type QueryParamPrimitive = string | number | boolean;
+
+type QueryParamValue =
+  QueryParamPrimitive | readonly QueryParamPrimitive[] | null | undefined;
 
 type QueryParams = Record<string, QueryParamValue>;
+type SearchParamsConfig = Record<string, "single" | "array">;
+type EmptySearchParamsConfig = Record<never, never>;
+
+type SearchParamsObject<TConfig extends SearchParamsConfig> = {
+  readonly [TKey in keyof TConfig]: TConfig[TKey] extends "array"
+    ? string[]
+    : string | undefined;
+};
 
 type UpdateQueryParamsOptions = {
   replace?: boolean;
   scroll?: boolean;
 };
 
-export function useQueryParams() {
+export function useQueryParams<
+  const TConfig extends SearchParamsConfig = EmptySearchParamsConfig,
+>(config?: TConfig) {
   const router = useRouter();
   const pathname = usePathname();
-  const searchParams = useSearchParams();
+  const urlSearchParams = useSearchParams();
+
+  const searchParams = useMemo(
+    () =>
+      Object.fromEntries(
+        Object.entries(config ?? {}).map(([name, type]) => [
+          name,
+          type === "array"
+            ? urlSearchParams.getAll(name)
+            : (urlSearchParams.get(name) ?? undefined),
+        ]),
+      ) as SearchParamsObject<TConfig>,
+    [config, urlSearchParams],
+  );
 
   const getQueryParamsHref = useCallback(
     (updates: QueryParams) => {
-      const params = new URLSearchParams(searchParams.toString());
+      const params = new URLSearchParams(urlSearchParams.toString());
 
       Object.entries(updates).forEach(([name, value]) => {
-        if (value === null || value === undefined) {
-          params.delete(name);
-        } else {
+        params.delete(name);
+
+        if (Array.isArray(value)) {
+          value.forEach((item) => {
+            params.append(name, String(item));
+          });
+          return;
+        }
+
+        if (value !== null && value !== undefined) {
           params.set(name, String(value));
         }
       });
 
       const query = params.toString();
-
       return query ? `${pathname}?${query}` : pathname;
     },
-    [pathname, searchParams],
+    [pathname, urlSearchParams],
   );
 
   const updateQueryParams = useCallback(
