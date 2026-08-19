@@ -5,9 +5,12 @@ import Link from "next/link";
 import { useMemo, type ReactNode } from "react";
 import { DataTable } from "@/components/data-table";
 import { createUsersTableColumns } from "@/components/users/users-table-columns";
-import type { UsersSort, UsersSortField } from "@/features/users/hooks/use-users-page";
 import type { User } from "@/features/users/types/user.types";
 import { useQueryParams } from "@/hooks/use-query-params";
+import {
+  UsersSort,
+  UsersSortField,
+} from "@/features/users/schemas/use-search-params.schema";
 
 type UsersTableProps = {
   users: User[];
