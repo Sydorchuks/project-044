@@ -2,34 +2,21 @@
 
 import { useQuery } from "@tanstack/react-query";
 import { useCallback, useMemo } from "react";
-
 import { getUsers } from "@/features/users/api/users.api";
 import type { User } from "@/features/users/types/user.types";
 import { useQueryParams } from "@/hooks/use-query-params";
-
+import {
+  DEFAULT_USERS_SORT,
+  UsersSort,
+  UsersSortField,
+  usersSearchParamsSchema,
+} from "../schemas/use-search-params.schema";
 const USERS_LIMIT = 8;
-const USERS_SORT_FIELDS = ["id", "first_name", "created_at"] as const;
-const USERS_SEARCH_PARAMS_CONFIG = {
-  search: "single",
-  page: "single",
-  sort: "single",
-} as const;
 const EMPTY_USERS: User[] = [];
 
-export type UsersSortField = (typeof USERS_SORT_FIELDS)[number];
-export type UsersSort = `${UsersSortField}:${1 | -1}`;
-const DEFAULT_USERS_SORT: UsersSort = "id:1";
-
 export function useUsersPage() {
-  const { searchParams, updateQueryParams } = useQueryParams(
-    USERS_SEARCH_PARAMS_CONFIG,
-  );
-
-  const { search: searchValue, page: pageValue, sort: sortValue } = searchParams;
-
-  const search = (searchValue ?? "").trim();
-  const page = parsePage(pageValue);
-  const sort = parseSort(sortValue);
+  const { searchParams, updateQueryParams } = useQueryParams(usersSearchParamsSchema);
+  const { search, page, sort } = searchParams;
   const skip = (page - 1) * USERS_LIMIT;
 
   const {
@@ -72,10 +59,8 @@ export function useUsersPage() {
 
   const handleSearch = useCallback(
     (value: string) => {
-      const normalizedSearch = value.trim();
-
       updateQueryParams({
-        search: normalizedSearch || null,
+        search: value.trim(),
         page: null,
       });
     },
@@ -118,25 +103,4 @@ export function useUsersPage() {
     handleClear,
     handleSort,
   };
-}
-
-function parsePage(value: string | undefined) {
-  const parsedPage = Number(value ?? "1");
-
-  return Number.isSafeInteger(parsedPage) && parsedPage > 0 ? parsedPage : 1;
-}
-
-function parseSort(value: string | undefined): UsersSort {
-  if (!value) {
-    return DEFAULT_USERS_SORT;
-  }
-
-  const [field, direction, extraPart] = value.split(":");
-  const isValidField = (USERS_SORT_FIELDS as readonly string[]).includes(field);
-  const isValidDirection = direction === "1" || direction === "-1";
-
-  if (extraPart !== undefined || !isValidField || !isValidDirection) {
-    return DEFAULT_USERS_SORT;
-  }
-  return `${field}:${direction}` as UsersSort;
 }

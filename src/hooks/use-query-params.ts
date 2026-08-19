@@ -2,6 +2,7 @@
 
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useCallback, useMemo } from "react";
+import type { z } from "zod";
 
 type QueryParamPrimitive = string | number | boolean;
 
@@ -9,42 +10,52 @@ type QueryParamValue =
   QueryParamPrimitive | readonly QueryParamPrimitive[] | null | undefined;
 
 type QueryParams = Record<string, QueryParamValue>;
-type SearchParamsConfig = Record<string, "single" | "array">;
-type EmptySearchParamsConfig = Record<never, never>;
 
-type SearchParamsObject<TConfig extends SearchParamsConfig> = {
-  readonly [TKey in keyof TConfig]: TConfig[TKey] extends "array"
-    ? string[]
-    : string | undefined;
-};
+type ParsedSearchParams<TSchema extends z.ZodType | undefined> =
+  TSchema extends z.ZodType ? z.output<TSchema> : Record<string, string | string[]>;
+type QueryParamsUpdate<TSchema extends z.ZodType | undefined> =
+  TSchema extends z.ZodType
+    ? Partial<{
+        [TKey in keyof z.output<TSchema>]: z.output<TSchema>[TKey] | null;
+      }>
+    : QueryParams;
 
 type UpdateQueryParamsOptions = {
   replace?: boolean;
   scroll?: boolean;
 };
 
-export function useQueryParams<
-  const TConfig extends SearchParamsConfig = EmptySearchParamsConfig,
->(config?: TConfig) {
+export function useQueryParams<TSchema extends z.ZodType | undefined = undefined>(
+  schema?: TSchema,
+) {
   const router = useRouter();
   const pathname = usePathname();
   const urlSearchParams = useSearchParams();
 
-  const searchParams = useMemo(
-    () =>
-      Object.fromEntries(
-        Object.entries(config ?? {}).map(([name, type]) => [
-          name,
-          type === "array"
-            ? urlSearchParams.getAll(name)
-            : (urlSearchParams.get(name) ?? undefined),
-        ]),
-      ) as SearchParamsObject<TConfig>,
-    [config, urlSearchParams],
-  );
+  const searchParams = useMemo(() => {
+    const params: Record<string, string | string[]> = {};
+
+    urlSearchParams.forEach((value, name) => {
+      const currentValue = params[name];
+
+      if (currentValue === undefined) {
+        params[name] = value;
+        return;
+      }
+
+      if (Array.isArray(currentValue)) {
+        params[name] = [...currentValue, value];
+        return;
+      }
+
+      params[name] = [currentValue, value];
+    });
+
+    return (schema ? schema.parse(params) : params) as ParsedSearchParams<TSchema>;
+  }, [schema, urlSearchParams]);
 
   const getQueryParamsHref = useCallback(
-    (updates: QueryParams) => {
+    (updates: QueryParamsUpdate<TSchema>) => {
       const params = new URLSearchParams(urlSearchParams.toString());
 
       Object.entries(updates).forEach(([name, value]) => {
@@ -69,7 +80,7 @@ export function useQueryParams<
   );
 
   const updateQueryParams = useCallback(
-    (updates: QueryParams, options: UpdateQueryParamsOptions = {}) => {
+    (updates: QueryParamsUpdate<TSchema>, options: UpdateQueryParamsOptions = {}) => {
       const { replace = false, scroll = false } = options;
       const href = getQueryParamsHref(updates);
 
@@ -77,10 +88,15 @@ export function useQueryParams<
         router.replace(href, { scroll });
         return;
       }
+
       router.push(href, { scroll });
     },
     [getQueryParamsHref, router],
   );
 
-  return { searchParams, getQueryParamsHref, updateQueryParams };
+  return {
+    searchParams,
+    getQueryParamsHref,
+    updateQueryParams,
+  };
 }
