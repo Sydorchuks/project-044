@@ -4,10 +4,13 @@ import { ChevronDown } from "lucide-react";
 import { dataTableFeatures } from "@/components/data-table";
 import { Button } from "@/components/ui/button";
 import { UserStatusBadge } from "@/components/users/user-status-badge";
-import type { UsersSort, UsersSortField } from "@/features/users/hooks/use-users-page";
 import { formatUserDate, getUserFullName } from "@/features/users/lib/user-formatters";
 import type { User } from "@/features/users/types/user.types";
 import { cn } from "@/lib/utils";
+import {
+  UsersSort,
+  UsersSortField,
+} from "@/features/users/schemas/use-search-params.schema";
 
 type CreateUsersTableColumnsOptions = {
   sort: UsersSort;
