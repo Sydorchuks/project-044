@@ -4,15 +4,15 @@ import { useRouter } from "next/navigation";
 import { isAxiosError } from "axios";
 import { createUser } from "@/features/users/api/users.api";
 import {
-  createUserSchema,
-  type CreateUserFormValues,
-} from "@/features/users/schemas/create-user-schema";
+  userFormSchema,
+  type UserFormValues,
+} from "@/features/users/schemas/user-form-schema";
 import type { CreateUserPayload } from "@/features/users/types/user.types";
 import { type FormErrors, useFormState } from "@/hooks/use-form-state";
 import { USER_ROLES } from "@/features/constants/user.constants";
 
-export type CreateUserFormErrors = FormErrors<CreateUserFormValues>;
-const initialValues: CreateUserFormValues = {
+export type CreateUserFormErrors = FormErrors<UserFormValues>;
+const initialValues: UserFormValues = {
   firstName: "",
   lastName: "",
   phone: "",
@@ -26,7 +26,7 @@ export function useCreateUserForm() {
 
   const { values, errors, isSubmitting, setField, createSubmitHandler } = useFormState({
     initialValues,
-    schema: createUserSchema,
+    schema: userFormSchema,
   });
 
   function redirectToUsers() {
@@ -38,7 +38,7 @@ export function useCreateUserForm() {
     router.push("/users");
   }
 
-  async function submitUser(values: CreateUserFormValues) {
+  async function submitUser(values: UserFormValues) {
     const payload = toCreateUserPayload(values);
 
     await createUser(payload);
@@ -50,7 +50,7 @@ export function useCreateUserForm() {
   return { values, errors, isSubmitting, setField, handleCancel, handleSubmit };
 }
 
-function toCreateUserPayload(values: CreateUserFormValues): CreateUserPayload {
+function toCreateUserPayload(values: UserFormValues): CreateUserPayload {
   return {
     email: values.email.trim(),
     roleId: USER_ROLES.SUPER_ADMIN,

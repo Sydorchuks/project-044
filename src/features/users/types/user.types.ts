@@ -60,3 +60,11 @@ export type CreateUserPayload = {
 export type CreateUserResponse = {
   reset_token?: string;
 };
+
+export type UpdateUserPayload = {
+  first_name: string;
+  last_name: string;
+  phone: string;
+  domain_url: string;
+  description: string | null;
+};

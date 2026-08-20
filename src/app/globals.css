@@ -10,6 +10,7 @@
 
   --color-background: var(--background);
   --color-foreground: var(--foreground);
+  --color-background-gray: var(--background-gray);
 
   --color-brand-foreground: var(--brand-foreground);
   --color-brand-light: var(--brand-light);
@@ -96,6 +97,7 @@
 :root {
   --background: #ffffff;
   --foreground: #1c2127;
+  --background-gray: #abb3bf;
 
   --brand-foreground: #363636;
   --brand-light: #a28df5;

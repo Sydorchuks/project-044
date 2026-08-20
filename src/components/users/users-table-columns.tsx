@@ -1,5 +1,6 @@
 import { createColumnHelper } from "@tanstack/react-table";
 import { ChevronDown } from "lucide-react";
+import Link from "next/link";
 
 import { dataTableFeatures } from "@/components/data-table";
 import { Button } from "@/components/ui/button";
@@ -7,7 +8,7 @@ import { UserStatusBadge } from "@/components/users/user-status-badge";
 import { formatUserDate, getUserFullName } from "@/features/users/lib/user-formatters";
 import type { User } from "@/features/users/types/user.types";
 import { cn } from "@/lib/utils";
-import {
+import type {
   UsersSort,
   UsersSortField,
 } from "@/features/users/schemas/use-search-params.schema";
@@ -16,6 +17,7 @@ type CreateUsersTableColumnsOptions = {
   sort: UsersSort;
   onSortChange: (field: UsersSortField) => void;
 };
+
 type SortableColumnHeaderProps = {
   label: string;
   field: UsersSortField;
@@ -109,10 +111,11 @@ export function createUsersTableColumns({
     columnHelper.display({
       id: "actions",
       header: "Дія",
-      cell: () => (
+      cell: ({ row }) => (
         <Button
-          type="button"
-          className="bg-muted text-text-muted hover:bg-primary hover:text-primary-foreground h-6 rounded-full px-3 text-[12px] font-bold transition-colors"
+          nativeButton={false}
+          render={<Link href={`/users/${row.original.id}/edit`} />}
+          className="hover:bg-primary hover:text-primary-foreground h-6 rounded-full bg-[#ABB3BF] px-3 text-[12px] text-white transition-colors"
         >
           Редагувати
         </Button>
