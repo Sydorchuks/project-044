@@ -16,20 +16,20 @@ export function DeletedUserDetails({ user }: DeletedUserDetailsProps) {
         nativeButton={false}
         variant="link"
         render={<Link href="/users" />}
-        className="text-primary mb-3.75 h-5 justify-start gap-1.25 p-0 font-sans text-[16px] leading-4.75 font-medium"
+        className="mb-3.75 h-5 justify-start gap-1.25 p-0 font-sans text-[16px] leading-4.75 font-medium text-primary"
       >
         <ChevronLeft aria-hidden="true" className="size-5" />
         Повернутись
       </Button>
 
-      <Card className="border-border bg-background min-h-115.75 rounded-2xl shadow-[0_1.5px_2px_rgba(16,24,40,0.1)]">
+      <Card className="min-h-115.75 rounded-2xl border-border bg-background shadow-[0_1.5px_2px_rgba(16,24,40,0.1)]">
         <CardContent className="p-6">
           <div className="mb-3.5 flex items-start justify-between gap-3.5">
-            <h2 className="text-primary font-sans text-[18px] leading-5.25 font-medium">
+            <h2 className="font-sans text-[18px] leading-5.25 font-medium text-primary">
               Загальна інформація
             </h2>
 
-            <p className="text-text-heading font-sans text-[16px] leading-4.75 font-medium">
+            <p className="font-sans text-[16px] leading-4.75 font-medium text-text-heading">
               Користувач видалений
             </p>
           </div>
@@ -59,13 +59,9 @@ export function DeletedUserDetails({ user }: DeletedUserDetailsProps) {
 function DeletedUserField({ label, value }: { label: string; value?: string | null }) {
   return (
     <div className="flex flex-col gap-2.5">
-      <dt className="text-text-heading font-sans text-[14px] leading-4 font-medium">
-        {label}:
-      </dt>
+      <dt className="font-sans text-[14px] leading-4 font-medium text-text-heading">{label}:</dt>
 
-      <dd className="text-text-heading font-sans text-[14px] leading-4">
-        {value || "-"}
-      </dd>
+      <dd className="font-sans text-[14px] leading-4 text-text-heading">{value || "-"}</dd>
     </div>
   );
 }

@@ -98,22 +98,20 @@ export function UserForm({
   return (
     <form
       onSubmit={onSubmit}
-      className="desktop:max-w-140 ultra:max-w-170 w-full max-w-115"
+      className="w-full max-w-115 desktop:max-w-140 ultra:max-w-170"
       noValidate
     >
-      <Card className="border-border bg-background rounded-3xl shadow-sm">
-        <CardContent className="desktop:p-8 ultra:p-10 p-6">
-          <h2 className="text-primary desktop:text-[18px] desktop:leading-6 ultra:text-[22px] mb-5 font-sans text-[16px] leading-5 font-bold">
+      <Card className="rounded-3xl border-border bg-background shadow-sm">
+        <CardContent className="p-6 desktop:p-8 ultra:p-10">
+          <h2 className="mb-5 font-sans text-[16px] leading-5 font-bold text-primary desktop:text-[18px] desktop:leading-6 ultra:text-[22px]">
             Загальна інформація
           </h2>
 
           {errors.form && (
-            <p className="text-text-error mb-4 font-sans text-[14px] leading-4">
-              {errors.form}
-            </p>
+            <p className="mb-4 font-sans text-[14px] leading-4 text-text-error">{errors.form}</p>
           )}
 
-          <div className="desktop:space-y-5 ultra:space-y-6 space-y-4">
+          <div className="space-y-4 desktop:space-y-5 ultra:space-y-6">
             {textFields.map((field) => (
               <UserTextField
                 key={field.name}
@@ -132,7 +130,7 @@ export function UserForm({
                 placeholder="Введіть опис"
                 className={cn(
                   fieldClassName,
-                  "desktop:min-h-40 ultra:min-h-48 min-h-32 w-full resize-none py-3",
+                  "min-h-32 w-full resize-none py-3 desktop:min-h-40 ultra:min-h-48",
                   errors.description && errorFieldClassName,
                 )}
               />
@@ -153,7 +151,7 @@ export function UserForm({
       </Card>
 
       <div
-        className={cn("desktop:mt-7 ultra:mt-8 mt-6 flex items-center gap-4", {
+        className={cn("mt-6 flex items-center gap-4 desktop:mt-7 ultra:mt-8", {
           "justify-between": isEditMode,
           "justify-end": !isEditMode,
         })}
@@ -166,7 +164,7 @@ export function UserForm({
             disabled={isBusy}
             className={cn(
               actionButtonClassName,
-              "border-text-muted text-text-muted hover:border-text-error hover:bg-text-error/10 hover:text-text-error bg-transparent",
+              "border-text-muted bg-transparent text-text-muted hover:border-text-error hover:bg-text-error/10 hover:text-text-error",
             )}
           >
             Видалити
@@ -181,7 +179,7 @@ export function UserForm({
             disabled={isBusy}
             className={cn(
               actionButtonClassName,
-              "border-text-error text-text-error hover:bg-text-error/10 hover:text-text-error bg-transparent",
+              "border-text-error bg-transparent text-text-error hover:bg-text-error/10 hover:text-text-error",
             )}
           >
             Скасувати
@@ -190,10 +188,7 @@ export function UserForm({
           <Button
             type="submit"
             disabled={isBusy}
-            className={cn(
-              actionButtonClassName,
-              "desktop:min-w-60 ultra:min-w-72 min-w-48",
-            )}
+            className={cn(actionButtonClassName, "min-w-48 desktop:min-w-60 ultra:min-w-72")}
           >
             {getSubmitLabel(mode, isSubmitting)}
           </Button>
@@ -229,11 +224,7 @@ function UserTextField({
         readOnly={readOnly}
         aria-readonly={readOnly}
         aria-invalid={Boolean(error)}
-        className={cn(
-          fieldClassName,
-          readOnly && "cursor-default",
-          error && errorFieldClassName,
-        )}
+        className={cn(fieldClassName, readOnly && "cursor-default", error && errorFieldClassName)}
       />
     </UserFormField>
   );
@@ -242,14 +233,14 @@ function UserTextField({
 function UserFormField({ label, error, children }: UserFormFieldProps) {
   return (
     <label className="block">
-      <span className="text-text-heading ultra:text-[16px] mb-2 block font-sans text-[14px] leading-4 font-bold">
+      <span className="mb-2 block font-sans text-[14px] leading-4 font-bold text-text-heading ultra:text-[16px]">
         {label}
       </span>
 
       {children}
 
       {error && (
-        <span className="text-text-error ultra:text-[14px] mt-1.5 block font-sans text-[12px] leading-4">
+        <span className="mt-1.5 block font-sans text-[12px] leading-4 text-text-error ultra:text-[14px]">
           {error}
         </span>
       )}

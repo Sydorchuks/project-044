@@ -57,6 +57,7 @@ export function EditUserForm({ user }: EditUserFormProps) {
         error={saveError}
         onOpenChange={handleSaveDialogOpenChange}
         onConfirm={handleSave}
+        title="Підтвердження"
       />
 
       <ConfirmationDialog
@@ -68,6 +69,7 @@ export function EditUserForm({ user }: EditUserFormProps) {
         error={saveError}
         onOpenChange={handleCloseDialogOpenChange}
         onConfirm={handleSaveBeforeClose}
+        title="Підтвердження"
       />
 
       <ConfirmationDialog
@@ -79,6 +81,7 @@ export function EditUserForm({ user }: EditUserFormProps) {
         error={deleteError}
         onOpenChange={handleDeleteDialogOpenChange}
         onConfirm={handleDelete}
+        title="Підтвердження"
       />
     </>
   );

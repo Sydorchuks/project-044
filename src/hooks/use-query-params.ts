@@ -6,19 +6,18 @@ import type { z } from "zod";
 
 type QueryParamPrimitive = string | number | boolean;
 
-type QueryParamValue =
-  QueryParamPrimitive | readonly QueryParamPrimitive[] | null | undefined;
+type QueryParamValue = QueryParamPrimitive | readonly QueryParamPrimitive[] | null | undefined;
 
 type QueryParams = Record<string, QueryParamValue>;
 
-type ParsedSearchParams<TSchema extends z.ZodType | undefined> =
-  TSchema extends z.ZodType ? z.output<TSchema> : Record<string, string | string[]>;
-type QueryParamsUpdate<TSchema extends z.ZodType | undefined> =
-  TSchema extends z.ZodType
-    ? Partial<{
-        [TKey in keyof z.output<TSchema>]: z.output<TSchema>[TKey] | null;
-      }>
-    : QueryParams;
+type ParsedSearchParams<TSchema extends z.ZodType | undefined> = TSchema extends z.ZodType
+  ? z.output<TSchema>
+  : Record<string, string | string[]>;
+type QueryParamsUpdate<TSchema extends z.ZodType | undefined> = TSchema extends z.ZodType
+  ? Partial<{
+      [TKey in keyof z.output<TSchema>]: z.output<TSchema>[TKey] | null;
+    }>
+  : QueryParams;
 
 type UpdateQueryParamsOptions = {
   replace?: boolean;

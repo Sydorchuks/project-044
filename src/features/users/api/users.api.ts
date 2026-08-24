@@ -19,9 +19,7 @@ export async function getUsers(params: GetUsersParams = {}): Promise<UsersRespon
   return usersResponseSchema.parse(data);
 }
 
-export async function createUser(
-  payload: CreateUserPayload,
-): Promise<CreateUserResponse> {
+export async function createUser(payload: CreateUserPayload): Promise<CreateUserResponse> {
   try {
     const { data } = await apiClient.post<CreateUserResponse>("api/users", payload);
 

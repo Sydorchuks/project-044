@@ -8,10 +8,7 @@ import { UserStatusBadge } from "@/components/users/user-status-badge";
 import { formatUserDate, getUserFullName } from "@/features/users/lib/user-formatters";
 import type { User } from "@/features/users/types/user.types";
 import { cn } from "@/lib/utils";
-import type {
-  UsersSort,
-  UsersSortField,
-} from "@/features/users/schemas/use-search-params.schema";
+import type { UsersSort, UsersSortField } from "@/features/users/schemas/use-search-params.schema";
 
 type CreateUsersTableColumnsOptions = {
   sort: UsersSort;
@@ -27,19 +24,11 @@ type SortableColumnHeaderProps = {
 
 const columnHelper = createColumnHelper<typeof dataTableFeatures, User>();
 
-export function createUsersTableColumns({
-  sort,
-  onSortChange,
-}: CreateUsersTableColumnsOptions) {
+export function createUsersTableColumns({ sort, onSortChange }: CreateUsersTableColumnsOptions) {
   return columnHelper.columns([
     columnHelper.accessor("id", {
       header: () => (
-        <SortableColumnHeader
-          label="ID"
-          field="id"
-          sort={sort}
-          onSortChange={onSortChange}
-        />
+        <SortableColumnHeader label="ID" field="id" sort={sort} onSortChange={onSortChange} />
       ),
       cell: ({ getValue }) => `#${getValue()}`,
       meta: {
@@ -57,9 +46,7 @@ export function createUsersTableColumns({
           onSortChange={onSortChange}
         />
       ),
-      cell: ({ getValue }) => (
-        <span className="line-clamp-2 font-medium">{getValue()}</span>
-      ),
+      cell: ({ getValue }) => <span className="line-clamp-2 font-medium">{getValue()}</span>,
       meta: {
         headerClassName: "w-[18%]",
       },
@@ -76,9 +63,7 @@ export function createUsersTableColumns({
     columnHelper.accessor((user) => user.account?.email, {
       id: "email",
       header: "Ел. пошта",
-      cell: ({ getValue }) => (
-        <span className="block truncate">{getValue() || "-"}</span>
-      ),
+      cell: ({ getValue }) => <span className="block truncate">{getValue() || "-"}</span>,
       meta: {
         headerClassName: "w-[24%]",
       },
@@ -115,7 +100,7 @@ export function createUsersTableColumns({
         <Button
           nativeButton={false}
           render={<Link href={`/users/${row.original.id}/edit`} />}
-          className="hover:bg-primary hover:text-primary-foreground h-6 rounded-full bg-[#ABB3BF] px-3 text-[12px] text-white transition-colors"
+          className="h-6 rounded-full bg-[#ABB3BF] px-3 text-[12px] text-white transition-colors hover:bg-primary hover:text-primary-foreground"
         >
           Редагувати
         </Button>
@@ -127,12 +112,7 @@ export function createUsersTableColumns({
   ]);
 }
 
-function SortableColumnHeader({
-  label,
-  field,
-  sort,
-  onSortChange,
-}: SortableColumnHeaderProps) {
+function SortableColumnHeader({ label, field, sort, onSortChange }: SortableColumnHeaderProps) {
   const [activeField, direction] = sort.split(":");
 
   const isActive = activeField === field;

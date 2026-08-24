@@ -10,8 +10,7 @@ import { UsersTable } from "@/components/users/users-table";
 import { useUsersPage } from "@/features/users/hooks/use-users-page";
 import { cn } from "@/lib/utils";
 
-const CONTROL_BUTTON_CLASS_NAME =
-  "desktop:h-11 h-10 rounded-3xl font-sans text-[14px] font-bold";
+const CONTROL_BUTTON_CLASS_NAME = "desktop:h-11 h-10 rounded-3xl font-sans text-[14px] font-bold";
 const SECONDARY_BUTTON_CLASS_NAME =
   "bg-action-muted text-primary-foreground hover:bg-action-muted/80";
 
@@ -46,19 +45,19 @@ export function UsersPage() {
   }
 
   return (
-    <section className="bg-main-bg desktop:pr-10 ultra:pr-14 min-h-full px-5 pt-4 pb-8 xl:px-0 xl:pt-0 xl:pr-7">
+    <section className="min-h-full bg-main-bg px-5 pt-4 pb-8 xl:px-0 xl:pt-0 xl:pr-7 desktop:pr-10 ultra:pr-14">
       <div className="w-full">
         <div className="mb-6 grid grid-cols-[minmax(0,1fr)_auto] items-end gap-5">
           <div>
-            <h1 className="text-text-heading desktop:text-[28px] desktop:leading-9 mb-4 font-sans text-[24px] leading-8 font-bold">
+            <h1 className="mb-4 font-sans text-[24px] leading-8 font-bold text-text-heading desktop:text-[28px] desktop:leading-9">
               Користувачі
             </h1>
 
             <form className="flex items-center gap-4" onSubmit={handleSearchSubmit}>
-              <div className="desktop:max-w-117.5 ultra:max-w-140 relative w-full max-w-97">
+              <div className="relative w-full max-w-97 desktop:max-w-117.5 ultra:max-w-140">
                 <Search
                   aria-hidden="true"
-                  className="text-text-muted pointer-events-none absolute top-1/2 left-4 size-5 -translate-y-1/2"
+                  className="pointer-events-none absolute top-1/2 left-4 size-5 -translate-y-1/2 text-text-muted"
                 />
 
                 <Input
@@ -66,14 +65,11 @@ export function UsersPage() {
                   name="search"
                   defaultValue={search}
                   placeholder="Пошук..."
-                  className="desktop:h-11 h-10 rounded-3xl pl-11"
+                  className="h-10 rounded-3xl pl-11 desktop:h-11"
                 />
               </div>
 
-              <Button
-                type="submit"
-                className={cn(CONTROL_BUTTON_CLASS_NAME, "desktop:w-36 w-31")}
-              >
+              <Button type="submit" className={cn(CONTROL_BUTTON_CLASS_NAME, "w-31 desktop:w-36")}>
                 Пошук
               </Button>
 
@@ -84,7 +80,7 @@ export function UsersPage() {
                 className={cn(
                   CONTROL_BUTTON_CLASS_NAME,
                   SECONDARY_BUTTON_CLASS_NAME,
-                  "desktop:w-32 w-28",
+                  "w-28 desktop:w-32",
                 )}
               >
                 Очистити
@@ -99,7 +95,7 @@ export function UsersPage() {
               className={cn(
                 CONTROL_BUTTON_CLASS_NAME,
                 SECONDARY_BUTTON_CLASS_NAME,
-                "desktop:px-5 px-4",
+                "px-4 desktop:px-5",
               )}
             >
               <Download aria-hidden="true" className="size-4" />
@@ -109,7 +105,7 @@ export function UsersPage() {
             <Button
               type="button"
               onClick={handleCreateUser}
-              className={cn(CONTROL_BUTTON_CLASS_NAME, "desktop:px-5 px-4")}
+              className={cn(CONTROL_BUTTON_CLASS_NAME, "px-4 desktop:px-5")}
             >
               <Plus aria-hidden="true" className="size-4" />
               Додати користувача

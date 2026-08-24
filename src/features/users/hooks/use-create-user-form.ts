@@ -3,10 +3,7 @@
 import { useRouter } from "next/navigation";
 import { isAxiosError } from "axios";
 import { createUser } from "@/features/users/api/users.api";
-import {
-  userFormSchema,
-  type UserFormValues,
-} from "@/features/users/schemas/user-form-schema";
+import { userFormSchema, type UserFormValues } from "@/features/users/schemas/user-form-schema";
 import type { CreateUserPayload } from "@/features/users/types/user.types";
 import { type FormErrors, useFormState } from "@/hooks/use-form-state";
 import { USER_ROLES } from "@/features/constants/user.constants";

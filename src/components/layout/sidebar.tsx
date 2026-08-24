@@ -9,7 +9,7 @@ type SidebarProps = {
 
 export function Sidebar({ items }: SidebarProps) {
   return (
-    <aside className="bg-main-bg col-start-1 row-start-2 h-full w-23.75 px-5 py-6.25 xl:row-span-2 xl:row-start-1 xl:w-68.75 xl:px-4.25">
+    <aside className="col-start-1 row-start-2 h-full w-23.75 bg-main-bg px-5 py-6.25 xl:row-span-2 xl:row-start-1 xl:w-68.75 xl:px-4.25">
       <div className="flex h-full flex-col xl:w-58.25">
         <div className="hidden xl:block">
           <div className="mb-6.25 flex h-11 items-center px-3">

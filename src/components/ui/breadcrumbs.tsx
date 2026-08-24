@@ -27,7 +27,7 @@ export function Breadcrumbs({ items, className }: BreadcrumbsProps) {
               {item.href && !isCurrentPage ? (
                 <Link
                   href={item.href}
-                  className="text-text-muted hover:text-primary transition-colors"
+                  className="text-text-muted transition-colors hover:text-primary"
                 >
                   {item.label}
                 </Link>
@@ -36,7 +36,7 @@ export function Breadcrumbs({ items, className }: BreadcrumbsProps) {
                   aria-current={isCurrentPage ? "page" : undefined}
                   className={cn({
                     "text-text-muted": !isCurrentPage,
-                    "text-text-heading font-bold": isCurrentPage,
+                    "font-bold text-text-heading": isCurrentPage,
                   })}
                 >
                   {item.label}

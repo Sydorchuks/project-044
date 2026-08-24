@@ -13,10 +13,7 @@ const userAccountSchema = z.object({
   id: z.number(),
   email: z.string(),
   status: userStatusSchema,
-  role: z.preprocess(
-    (role) => (role === null ? undefined : role),
-    userRoleSchema.optional(),
-  ),
+  role: z.preprocess((role) => (role === null ? undefined : role), userRoleSchema.optional()),
 });
 
 export const userSchema = z.object({

@@ -41,7 +41,7 @@ export function DataTable<TData extends RowData>({
   const shouldShowState = isLoading || Boolean(error) || data.length === 0;
 
   return (
-    <table className="desktop:min-w-245 w-full min-w-190 table-fixed border-collapse font-sans">
+    <table className="w-full min-w-190 table-fixed border-collapse font-sans desktop:min-w-245">
       <DataTableHead table={table} />
 
       <tbody>
@@ -56,7 +56,7 @@ export function DataTable<TData extends RowData>({
           table.getRowModel().rows.map((row) => (
             <tr
               key={row.id}
-              className="border-border text-text-normal desktop:h-16 h-14 border-b text-[14px] leading-4 last:border-b-0"
+              className="h-14 border-b border-border text-[14px] leading-4 text-text-normal last:border-b-0 desktop:h-16"
             >
               {row.getAllCells().map((cell) => (
                 <td
@@ -84,7 +84,7 @@ function DataTableHead<TData extends RowData>({
       {table.getHeaderGroups().map((headerGroup) => (
         <tr
           key={headerGroup.id}
-          className="text-text-heading h-12.5 text-left text-[14px] leading-4 font-bold"
+          className="h-12.5 text-left text-[14px] leading-4 font-bold text-text-heading"
         >
           {headerGroup.headers.map((header) => (
             <th
@@ -115,7 +115,7 @@ function DataTableState({
     <tr>
       <td
         colSpan={span}
-        className="desktop:h-107.5 h-82.5 px-5 text-center font-sans text-[14px] leading-4"
+        className="h-82.5 px-5 text-center font-sans text-[14px] leading-4 desktop:h-107.5"
       >
         {error ? (
           <span className="text-text-error">{error}</span>
