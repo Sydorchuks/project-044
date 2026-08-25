@@ -3,12 +3,14 @@
 import { useQueryClient } from "@tanstack/react-query";
 import { isAxiosError } from "axios";
 import { useRouter } from "next/navigation";
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
+
 import { deleteUser, updateUser } from "@/features/users/api/users.api";
 import { userFormSchema, type UserFormValues } from "@/features/users/schemas/user-form-schema";
 import type { UpdateUserPayload, User } from "@/features/users/types/user.types";
 import { UserStatus } from "@/features/users/types/user.types";
 import { type FormErrors, useFormState } from "@/hooks/use-form-state";
+import { useNavigationBlocker } from "@/hooks/use-navigation-blocker";
 
 export type EditUserFormErrors = FormErrors<UserFormValues>;
 
@@ -17,6 +19,7 @@ export function useEditUserForm(user: User) {
   const queryClient = useQueryClient();
 
   const initialValues = useMemo(() => toUserFormValues(user), [user]);
+
   const {
     values,
     errors,
@@ -24,7 +27,10 @@ export function useEditUserForm(user: User) {
     isSubmitting: isValidating,
     setField,
     createSubmitHandler,
-  } = useFormState({ initialValues, schema: userFormSchema });
+  } = useFormState({
+    initialValues,
+    schema: userFormSchema,
+  });
 
   const [isSaving, setIsSaving] = useState(false);
   const [saveError, setSaveError] = useState("");
@@ -38,61 +44,16 @@ export function useEditUserForm(user: User) {
   const isSubmitting = isValidating || isSaving;
   const isBusy = isSubmitting || isDeleting;
 
-  useEffect(() => {
-    if (!isDirty || isBusy) {
-      return;
-    }
+  const handleNavigationBlocked = useCallback((href: string) => {
+    setSaveError("");
+    setPendingHref(href);
+    setIsCloseDialogOpen(true);
+  }, []);
 
-    function handleBeforeUnload(event: BeforeUnloadEvent) {
-      event.preventDefault();
-    }
-
-    function handleDocumentClick(event: MouseEvent) {
-      if (
-        event.defaultPrevented ||
-        event.button !== 0 ||
-        event.metaKey ||
-        event.ctrlKey ||
-        event.shiftKey ||
-        event.altKey
-      ) {
-        return;
-      }
-
-      const target = event.target;
-
-      if (!(target instanceof Element)) {
-        return;
-      }
-
-      const link = target.closest<HTMLAnchorElement>("a[href]");
-
-      if (!link || link.target === "_blank" || link.hasAttribute("download")) {
-        return;
-      }
-
-      const currentUrl = new URL(window.location.href);
-      const nextUrl = new URL(link.href, currentUrl);
-
-      if (nextUrl.origin !== currentUrl.origin || nextUrl.href === currentUrl.href) {
-        return;
-      }
-
-      event.preventDefault();
-
-      setSaveError("");
-      setPendingHref(`${nextUrl.pathname}${nextUrl.search}${nextUrl.hash}`);
-      setIsCloseDialogOpen(true);
-    }
-
-    window.addEventListener("beforeunload", handleBeforeUnload);
-    document.addEventListener("click", handleDocumentClick, true);
-
-    return () => {
-      window.removeEventListener("beforeunload", handleBeforeUnload);
-      document.removeEventListener("click", handleDocumentClick, true);
-    };
-  }, [isBusy, isDirty]);
+  useNavigationBlocker({
+    enabled: isDirty && !isBusy,
+    onBlock: handleNavigationBlocked,
+  });
 
   function redirectToUsers() {
     router.push("/users");
@@ -141,6 +102,7 @@ export function useEditUserForm(user: User) {
 
     try {
       await updateUser(user.id, toUpdateUserPayload(values));
+
       await queryClient.invalidateQueries({
         queryKey: ["users"],
       });
