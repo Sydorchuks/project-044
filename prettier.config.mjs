@@ -1,9 +1,17 @@
-const config = {
+const prettierConfig = {
   plugins: ["prettier-plugin-tailwindcss"],
-  printWidth: 88,
+  tailwindStylesheet: "./src/app/globals.css",
+  tailwindFunctions: ["cn", "cva", "clsx"],
+  printWidth: 100,
+  tabWidth: 2,
+  useTabs: false,
   semi: true,
   singleQuote: false,
   trailingComma: "all",
+  bracketSpacing: true,
+  bracketSameLine: false,
+  arrowParens: "always",
+  endOfLine: "lf",
 };
 
-export default config;
+export default prettierConfig;

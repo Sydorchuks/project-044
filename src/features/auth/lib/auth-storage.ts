@@ -7,11 +7,7 @@ type SaveAuthTokensParams = {
   rememberMe: boolean;
 };
 
-export function saveAuthTokens({
-  accessToken,
-  refreshToken,
-  rememberMe,
-}: SaveAuthTokensParams) {
+export function saveAuthTokens({ accessToken, refreshToken, rememberMe }: SaveAuthTokensParams) {
   localStorage.setItem(ACCESS_TOKEN_KEY, accessToken);
 
   if (rememberMe) {

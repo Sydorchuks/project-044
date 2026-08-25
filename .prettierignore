@@ -1,7 +1,8 @@
-node_modules/
-.next/
-out/
-build/
-coverage/
-playwright-report/
-test-results/
+.next
+node_modules
+coverage
+dist
+build
+out
+public
+package-lock.json

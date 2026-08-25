@@ -6,10 +6,7 @@ import { AxiosError } from "axios";
 
 import { login } from "@/features/auth/api/auth-api";
 import { saveAuthTokens } from "@/features/auth/lib/auth-storage";
-import {
-  loginSchema,
-  type LoginFormValues,
-} from "@/features/auth/schemas/login-schema";
+import { loginSchema, type LoginFormValues } from "@/features/auth/schemas/login-schema";
 
 export type LoginFormErrors = Partial<Record<"email" | "password" | "form", string>>;
 
@@ -62,10 +59,7 @@ export function useLoginForm() {
   const [errors, setErrors] = useState<LoginFormErrors>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  function updateValue<Key extends keyof LoginFormValues>(
-    key: Key,
-    value: LoginFormValues[Key],
-  ) {
+  function updateValue<Key extends keyof LoginFormValues>(key: Key, value: LoginFormValues[Key]) {
     setValues((currentValues) => ({ ...currentValues, [key]: value }));
 
     setErrors((currentErrors) => ({

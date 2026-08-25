@@ -21,11 +21,11 @@ export function LoginForm() {
   return (
     <form onSubmit={handleSubmit} noValidate className="w-full">
       <div className="mb-8.5">
-        <h1 className="text-primary font-sans text-[32px] leading-9.5 font-bold">
+        <h1 className="font-sans text-[32px] leading-9.5 font-bold text-primary">
           Увійти до Project name
         </h1>
 
-        <p className="text-text-normal mt-2 font-sans text-[14px] leading-4">
+        <p className="mt-2 font-sans text-[14px] leading-4 text-text-normal">
           Введіть адресу електронної пошти та пароль
           <br />
           для входу!
@@ -33,9 +33,7 @@ export function LoginForm() {
       </div>
 
       {errors.form ? (
-        <p className="text-text-error mb-4 font-sans text-[14px] leading-4">
-          {errors.form}
-        </p>
+        <p className="mb-4 font-sans text-[14px] leading-4 text-text-error">{errors.form}</p>
       ) : null}
 
       <div className="flex flex-col gap-6.25">
@@ -66,7 +64,7 @@ export function LoginForm() {
               type="button"
               aria-label={isPasswordVisible ? "Сховати пароль" : "Показати пароль"}
               onClick={() => setIsPasswordVisible((isVisible) => !isVisible)}
-              className="text-text-normal hover:text-primary focus-visible:text-primary grid size-4 place-items-center transition-colors outline-none"
+              className="grid size-4 place-items-center text-text-normal transition-colors outline-none hover:text-primary focus-visible:text-primary"
             >
               {isPasswordVisible ? (
                 <EyeOff className="size-4" aria-hidden="true" />
@@ -78,11 +76,11 @@ export function LoginForm() {
         />
       </div>
 
-      <label className="text-text-normal mt-6.25 flex w-fit items-center gap-2 font-sans text-[14px] leading-4">
+      <label className="mt-6.25 flex w-fit items-center gap-2 font-sans text-[14px] leading-4 text-text-normal">
         <Checkbox
           checked={values.remember}
           onCheckedChange={(checked) => updateValue("remember", checked === true)}
-          className="border-field-border data-[state=checked]:border-primary data-[state=checked]:bg-primary size-4 rounded-lg"
+          className="size-4 rounded-lg border-field-border data-[state=checked]:border-primary data-[state=checked]:bg-primary"
         />
         Памʼятай мене
       </label>
@@ -90,7 +88,7 @@ export function LoginForm() {
       <Button
         type="submit"
         disabled={isSubmitting}
-        className="bg-primary text-primary-foreground hover:bg-primary/90 mt-6.25 h-13.5 w-full rounded-[15px] font-sans text-[14px] font-bold"
+        className="mt-6.25 h-13.5 w-full rounded-[15px] bg-primary font-sans text-[14px] font-bold text-primary-foreground hover:bg-primary/90"
       >
         {isSubmitting ? "Вхід..." : "Увійти"}
       </Button>

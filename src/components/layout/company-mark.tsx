@@ -22,7 +22,7 @@ export function CompanyMark({
   return (
     <div
       className={cn(
-        "font-brand flex h-5 w-72.5 items-center overflow-visible text-[28px] leading-none tracking-[0.01em]",
+        "flex h-5 w-72.5 items-center overflow-visible font-brand text-[28px] leading-none tracking-[0.01em]",
         className,
       )}
     >

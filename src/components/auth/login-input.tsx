@@ -23,15 +23,12 @@ export default function LoginInput({
   return (
     <div className="flex flex-col gap-2.5">
       <div className="flex items-center justify-between gap-2.5">
-        <label
-          htmlFor={id}
-          className="text-text-heading font-sans text-[14px] leading-4"
-        >
+        <label htmlFor={id} className="font-sans text-[14px] leading-4 text-text-heading">
           {label}
         </label>
 
         {error ? (
-          <p id={errorId} className="text-text-error font-sans text-[14px] leading-4">
+          <p id={errorId} className="font-sans text-[14px] leading-4 text-text-error">
             {error}
           </p>
         ) : null}
@@ -47,9 +44,7 @@ export default function LoginInput({
         />
 
         {endAdornment ? (
-          <div className="absolute top-1/2 right-5.5 -translate-y-1/2">
-            {endAdornment}
-          </div>
+          <div className="absolute top-1/2 right-5.5 -translate-y-1/2">{endAdornment}</div>
         ) : null}
       </div>
     </div>

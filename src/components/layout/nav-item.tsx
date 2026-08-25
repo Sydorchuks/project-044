@@ -24,7 +24,7 @@ export function NavItem({ item }: NavItemProps) {
         "xl:w-54.5 xl:justify-start xl:gap-3.75 xl:px-4",
         isActive
           ? "bg-primary text-primary-foreground"
-          : "text-text-muted hover:bg-surface/45 hover:text-primary bg-transparent",
+          : "bg-transparent text-text-muted hover:bg-surface/45 hover:text-primary",
       )}
     >
       <span

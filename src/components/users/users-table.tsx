@@ -7,10 +7,7 @@ import { DataTable } from "@/components/data-table";
 import { createUsersTableColumns } from "@/components/users/users-table-columns";
 import type { User } from "@/features/users/types/user.types";
 import { useQueryParams } from "@/hooks/use-query-params";
-import {
-  UsersSort,
-  UsersSortField,
-} from "@/features/users/schemas/use-search-params.schema";
+import { UsersSort, UsersSortField } from "@/features/users/schemas/use-search-params.schema";
 
 type UsersTableProps = {
   users: User[];
@@ -43,7 +40,7 @@ export function UsersTable({
   );
 
   return (
-    <div className="bg-background w-full overflow-hidden rounded-3xl shadow-sm">
+    <div className="w-full overflow-hidden rounded-3xl bg-background shadow-sm">
       <div className="overflow-x-auto">
         <DataTable<User>
           data={users}
@@ -77,10 +74,8 @@ function UsersTableFooter({ rangeLabel, page, totalPages }: UsersTableFooterProp
   }
 
   return (
-    <div className="border-border flex h-17 items-center justify-between border-t px-5">
-      <p className="text-text-normal font-sans text-[14px] leading-4 font-bold">
-        {rangeLabel}
-      </p>
+    <div className="flex h-17 items-center justify-between border-t border-border px-5">
+      <p className="font-sans text-[14px] leading-4 font-bold text-text-normal">{rangeLabel}</p>
 
       <nav aria-label="Пагінація">
         <ul className="flex items-center gap-2">
@@ -100,7 +95,7 @@ function UsersTableFooter({ rangeLabel, page, totalPages }: UsersTableFooterProp
                 <li
                   key={item}
                   aria-hidden="true"
-                  className="text-text-muted grid size-8 place-items-center text-[14px] font-bold"
+                  className="grid size-8 place-items-center text-[14px] font-bold text-text-muted"
                 >
                   ...
                 </li>

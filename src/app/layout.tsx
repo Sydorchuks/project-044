@@ -37,9 +37,7 @@ export default function RootLayout({
       lang="uk"
       className={`${montserrat.variable} ${roboto.variable} ${raceSport.variable} h-full antialiased`}
     >
-      <body className="bg-secondary text-foreground min-h-full font-sans">
-        {children}
-      </body>
+      <body className="min-h-full bg-secondary font-sans text-foreground">{children}</body>
     </html>
   );
 }
