@@ -14,6 +14,9 @@
 
   --color-brand-foreground: var(--brand-foreground);
   --color-brand-light: var(--brand-light);
+  --color-help-decoration-primary: var(--help-decoration-primary);
+  --color-help-decoration-secondary: var(--help-decoration-secondary);
+  --color-help-decoration-tertiary: var(--help-decoration-tertiary);
 
   --font-sans: var(--font-roboto);
   --font-heading: var(--font-montserrat);
@@ -85,6 +88,8 @@
   --color-chart-4: var(--chart-4);
   --color-chart-5: var(--chart-5);
 
+  --shadow-dashboard-card: var(--dashboard-card-shadow);
+
   --radius-sm: 2px;
   --radius-md: 3px;
   --radius-lg: 4px;
@@ -92,6 +97,7 @@
   --radius-2xl: 8px;
   --radius-3xl: 10px;
   --radius-4xl: 12px;
+  --radius-panel: var(--panel-radius);
 }
 
 :root {
@@ -101,6 +107,10 @@
 
   --brand-foreground: #363636;
   --brand-light: #a28df5;
+
+  --help-decoration-primary: #9881f3;
+  --help-decoration-secondary: #bdadff;
+  --help-decoration-tertiary: #dad1ff;
 
   --card: #ffffff;
   --card-foreground: #1c2127;
@@ -159,6 +169,8 @@
   --chart-4: #d1980b;
   --chart-5: #cd4246;
 
+  --dashboard-card-shadow: 0 1px 1px rgb(17 20 24 / 20%), 0 0 0 1px rgb(17 20 24 / 10%);
+  --panel-radius: 15px;
   --radius: 15px;
 
   --sidebar: #edeff2;
