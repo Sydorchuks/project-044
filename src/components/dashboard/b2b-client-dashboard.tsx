@@ -2,5 +2,5 @@ import { DashboardNavigationGrid } from "@/components/dashboard/dashboard-naviga
 import { b2bClientDashboardItems } from "@/config/navigation";
 
 export function B2BClientDashboard() {
-  return <DashboardNavigationGrid items={b2bClientDashboardItems} title="B2B-панель" />;
+  return <DashboardNavigationGrid items={b2bClientDashboardItems} />;
 }

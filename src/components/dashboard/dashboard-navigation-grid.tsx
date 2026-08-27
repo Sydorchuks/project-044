@@ -6,15 +6,12 @@ import type { NavigationItem } from "@/config/navigation";
 
 type DashboardNavigationGridProps = Readonly<{
   items: readonly NavigationItem[];
-  title: string;
 }>;
 
-export function DashboardNavigationGrid({ items, title }: DashboardNavigationGridProps) {
+export function DashboardNavigationGrid({ items }: DashboardNavigationGridProps) {
   return (
     <div className="min-h-full bg-main-bg px-5 pt-6 pb-8 lg:pr-4 lg:pl-0 xl:pr-7">
-      <h1 className="sr-only">{title}</h1>
-
-      <nav aria-label={title}>
+      <nav aria-label="Dashboard navigation">
         <ul className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3 desktop:grid-cols-4">
           {items.map((item) => (
             <li key={item.href}>

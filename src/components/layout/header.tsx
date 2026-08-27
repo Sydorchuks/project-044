@@ -1,11 +1,16 @@
 import { CompanyMark } from "@/components/layout/company-mark";
+import { SidebarDivider } from "@/components/layout/sidebar-divider";
 import { UserAvatar } from "@/components/layout/user-avatar";
 import { Button } from "@/components/ui/button";
 
 export function Header() {
   return (
-    <header className="col-span-2 row-start-1 flex h-19.5 items-center justify-between bg-main-bg px-5 py-4.25 xl:col-start-2 xl:col-end-3 xl:h-23.5 xl:justify-end xl:px-7">
-      <CompanyMark className="xl:hidden" />
+    <header className="flex h-19.5 items-center justify-between bg-main-bg px-5 py-4.25 xl:h-23.5 xl:pr-7 xl:pl-4.25">
+      <div className="relative flex h-full items-center xl:w-58.25">
+        <CompanyMark className="w-54.5 text-[22px] xl:ml-2.75" />
+
+        <SidebarDivider className="absolute top-1/2 hidden translate-y-8.75 xl:block" />
+      </div>
 
       <Button
         type="button"

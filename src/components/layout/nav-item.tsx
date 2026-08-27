@@ -4,17 +4,15 @@ import type { ReactNode } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
-import type { AppShellVariant } from "@/config/navigation";
 import { cn } from "@/lib/utils";
 
 type NavItemProps = Readonly<{
   href: string;
   icon: ReactNode;
   title: string;
-  variant: AppShellVariant;
 }>;
 
-export function NavItem({ href, icon, title, variant }: NavItemProps) {
+export function NavItem({ href, icon, title }: NavItemProps) {
   const pathname = usePathname();
   const isActive = pathname === href || (href !== "/" && pathname.startsWith(`${href}/`));
 
@@ -23,8 +21,7 @@ export function NavItem({ href, icon, title, variant }: NavItemProps) {
       href={href}
       aria-current={isActive ? "page" : undefined}
       className={cn(
-        "group flex h-13.5 w-13.75 items-center justify-center rounded-panel px-3 py-3 font-sans text-[14px] leading-4 transition-colors xl:w-54.5 xl:justify-start xl:gap-3.75 xl:px-4",
-        variant === "b2b" ? "font-medium" : "font-bold",
+        "group flex h-13.5 w-13.75 items-center justify-center rounded-panel px-3 py-3 font-sans text-[14px] leading-4 font-bold transition-colors xl:w-54.5 xl:justify-start xl:gap-3.75 xl:px-4",
         isActive
           ? "bg-primary text-primary-foreground"
           : "bg-transparent text-text-muted hover:bg-surface/45 hover:text-primary",

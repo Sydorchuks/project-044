@@ -2,5 +2,5 @@ import { DashboardNavigationGrid } from "@/components/dashboard/dashboard-naviga
 import { superAdminDashboardItems } from "@/config/navigation";
 
 export function SuperAdminDashboard() {
-  return <DashboardNavigationGrid items={superAdminDashboardItems} title="Панель суперадміна" />;
+  return <DashboardNavigationGrid items={superAdminDashboardItems} />;
 }
