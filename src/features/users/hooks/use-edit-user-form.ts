@@ -56,7 +56,7 @@ export function useEditUserForm(user: User) {
   });
 
   function redirectToUsers() {
-    router.push("/users");
+    router.push("/admin/users");
   }
 
   function handleCancel() {
@@ -66,7 +66,7 @@ export function useEditUserForm(user: User) {
     }
 
     setSaveError("");
-    setPendingHref("/users");
+    setPendingHref("/admin/users");
     setIsCloseDialogOpen(true);
   }
 
@@ -120,11 +120,11 @@ export function useEditUserForm(user: User) {
   }
 
   async function handleSave() {
-    await saveChanges("/users");
+    await saveChanges("/admin/users");
   }
 
   async function handleSaveBeforeClose() {
-    await saveChanges(pendingHref ?? "/users");
+    await saveChanges(pendingHref ?? "/admin/users");
   }
 
   function handleDeleteRequest() {

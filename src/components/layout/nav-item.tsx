@@ -10,11 +10,12 @@ type NavItemProps = Readonly<{
   href: string;
   icon: ReactNode;
   title: string;
+  exact?: boolean;
 }>;
 
-export function NavItem({ href, icon, title }: NavItemProps) {
+export function NavItem({ href, icon, title, exact = false }: NavItemProps) {
   const pathname = usePathname();
-  const isActive = pathname === href || (href !== "/" && pathname.startsWith(`${href}/`));
+  const isActive = pathname === href || (!exact && pathname.startsWith(`${href}/`));
 
   return (
     <Link

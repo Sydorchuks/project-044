@@ -4,7 +4,7 @@ import { CreateUserForm } from "./create-user-form";
 const breadcrumbs: BreadcrumbItem[] = [
   {
     label: "Користувачі",
-    href: "/users",
+    href: "/admin/users",
   },
   {
     label: "Додати користувача",

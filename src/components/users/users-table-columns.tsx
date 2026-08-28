@@ -99,7 +99,7 @@ export function createUsersTableColumns({ sort, onSortChange }: CreateUsersTable
       cell: ({ row }) => (
         <Button
           nativeButton={false}
-          render={<Link href={`/users/${row.original.id}/edit`} />}
+          render={<Link href={`/admin/users/${row.original.id}/edit`} />}
           className="h-6 rounded-full bg-[#ABB3BF] px-3 text-[12px] text-white transition-colors hover:bg-primary hover:text-primary-foreground"
         >
           Редагувати

@@ -1,46 +1,49 @@
 type RoleAccessProfile = Readonly<{
   homeRoute: string;
-  allowedRoutes: readonly string[];
 }>;
 
 const LOGIN_ROUTE = "/login";
 
-const superAdminAccessProfile = {
-  homeRoute: "/",
-  allowedRoutes: ["/", "/users", "/requests"],
-} as const satisfies RoleAccessProfile;
-
-const roleAccessProfiles = {
-  super_admin: superAdminAccessProfile,
-  superuser: superAdminAccessProfile,
-  user_full: {
+const accessProfilesByScope = {
+  admin: {
+    homeRoute: "/admin",
+  },
+  b2b: {
     homeRoute: "/b2b/dashboard",
-    allowedRoutes: ["/b2b"],
   },
 } as const satisfies Record<string, RoleAccessProfile>;
 
-type SupportedRole = keyof typeof roleAccessProfiles;
+type RouteScope = keyof typeof accessProfilesByScope;
+
+const routeScopeByRole = {
+  super_admin: "admin",
+  superuser: "admin",
+  user_full: "b2b",
+} as const satisfies Record<string, RouteScope>;
+
+type SupportedRole = keyof typeof routeScopeByRole;
 
 function isSupportedRole(role: string): role is SupportedRole {
-  return Object.hasOwn(roleAccessProfiles, role);
+  return Object.hasOwn(routeScopeByRole, role);
 }
 
-function matchesRoute(pathname: string, allowedRoute: string) {
-  return (
-    pathname === allowedRoute || (allowedRoute !== "/" && pathname.startsWith(`${allowedRoute}/`))
-  );
-}
-
-function getAccessProfile(role?: string) {
+function getRoleAccess(role?: string) {
   if (!role || !isSupportedRole(role)) {
     return null;
   }
 
-  return roleAccessProfiles[role];
+  const scope = routeScopeByRole[role];
+
+  return {
+    scope,
+    profile: accessProfilesByScope[scope],
+  };
 }
 
-function isRouteAllowed(profile: RoleAccessProfile, pathname: string) {
-  return profile.allowedRoutes.some((allowedRoute) => matchesRoute(pathname, allowedRoute));
+function matchesRouteScope(pathname: string, scope: RouteScope) {
+  const scopeRoot = `/${scope}`;
+
+  return pathname === scopeRoot || pathname.startsWith(`${scopeRoot}/`);
 }
 
 function getInternalPathname(route: string) {
@@ -48,11 +51,17 @@ function getInternalPathname(route: string) {
     return null;
   }
 
-  try {
-    const baseUrl = new URL("http://localhost");
-    const routeUrl = new URL(route, baseUrl);
+  const appUrl = process.env.NEXT_PUBLIC_APP_URL;
 
-    if (routeUrl.origin !== baseUrl.origin) {
+  if (!appUrl) {
+    return null;
+  }
+
+  try {
+    const appOrigin = new URL(appUrl).origin;
+    const routeUrl = new URL(route, appOrigin);
+
+    if (routeUrl.origin !== appOrigin) {
       return null;
     }
 
@@ -63,29 +72,29 @@ function getInternalPathname(route: string) {
 }
 
 export function getUnauthorizedRoute(role: string | undefined, pathname: string) {
-  const profile = getAccessProfile(role);
+  const access = getRoleAccess(role);
 
-  if (!profile) {
+  if (!access) {
     return LOGIN_ROUTE;
   }
 
-  return isRouteAllowed(profile, pathname) ? null : profile.homeRoute;
+  return matchesRouteScope(pathname, access.scope) ? null : access.profile.homeRoute;
 }
 
 export function getPostLoginRoute(role: string | undefined, requestedRoute?: string | null) {
-  const profile = getAccessProfile(role);
+  const access = getRoleAccess(role);
 
-  if (!profile) {
+  if (!access) {
     return LOGIN_ROUTE;
   }
 
   if (requestedRoute) {
     const pathname = getInternalPathname(requestedRoute);
 
-    if (pathname && isRouteAllowed(profile, pathname)) {
+    if (pathname && matchesRouteScope(pathname, access.scope)) {
       return requestedRoute;
     }
   }
 
-  return profile.homeRoute;
+  return access.profile.homeRoute;
 }

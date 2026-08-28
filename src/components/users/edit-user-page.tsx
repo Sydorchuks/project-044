@@ -32,7 +32,7 @@ export function EditUserPage({ userId }: EditUserPageProps) {
   const breadcrumbs: BreadcrumbItem[] = [
     {
       label: "Користувачі",
-      href: "/users",
+      href: "/admin/users",
     },
     {
       label: `#${userId}`,

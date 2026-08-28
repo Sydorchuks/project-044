@@ -21,6 +21,7 @@ export function Sidebar({ items, showHelpCard }: SidebarProps) {
                     href={item.href}
                     icon={<NavigationIcon icon={item.icon} className="size-4" />}
                     title={item.title}
+                    exact={item.exact}
                   />
                 </li>
               ))}

@@ -8,7 +8,7 @@ import { getCurrentUser } from "@/features/auth/api/auth-api";
 import { getUnauthorizedRoute } from "@/features/auth/config/route-access";
 import { clearAuthTokens, getAccessToken } from "@/features/auth/lib/auth-storage";
 
-type RouteGuardProps = Readonly<{
+type AuthGuardProps = Readonly<{
   children: ReactNode;
 }>;
 
@@ -24,7 +24,7 @@ function getServerAccessTokenSnapshot() {
   return null;
 }
 
-export function RouteGuard({ children }: RouteGuardProps) {
+export function AuthGuard({ children }: AuthGuardProps) {
   const pathname = usePathname();
   const router = useRouter();
   const hasAccessToken = useSyncExternalStore<boolean | null>(

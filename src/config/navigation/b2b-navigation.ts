@@ -16,6 +16,7 @@ export const b2bClientNavigationItems = [
     title: "Головна",
     href: "/b2b/dashboard",
     icon: { type: "component", component: House },
+    exact: true,
     showOnDashboard: false,
   },
   {

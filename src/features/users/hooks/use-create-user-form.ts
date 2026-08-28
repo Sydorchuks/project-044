@@ -27,12 +27,12 @@ export function useCreateUserForm() {
   });
 
   function redirectToUsers() {
-    router.push("/users");
+    router.push("/admin/users");
     router.refresh();
   }
 
   function handleCancel() {
-    router.push("/users");
+    router.push("/admin/users");
   }
 
   async function submitUser(values: UserFormValues) {

@@ -32,7 +32,7 @@ export function UsersPage() {
   } = useUsersPage();
 
   function handleCreateUser() {
-    router.push("/users/create");
+    router.push("/admin/users/create");
   }
 
   function handleSearchSubmit(event: FormEvent<HTMLFormElement>) {

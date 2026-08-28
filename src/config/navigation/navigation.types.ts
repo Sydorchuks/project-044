@@ -16,5 +16,6 @@ export type NavigationItem = Readonly<{
   title: string;
   href: string;
   icon: NavigationIcon;
+  exact?: boolean;
   showOnDashboard: boolean;
 }>;

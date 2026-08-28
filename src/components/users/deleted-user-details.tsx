@@ -15,7 +15,7 @@ export function DeletedUserDetails({ user }: DeletedUserDetailsProps) {
       <Button
         nativeButton={false}
         variant="link"
-        render={<Link href="/users" />}
+        render={<Link href="/admin/users" />}
         className="mb-3.75 h-5 justify-start gap-1.25 p-0 font-sans text-[16px] leading-4.75 font-medium text-primary"
       >
         <ChevronLeft aria-hidden="true" className="size-5" />
