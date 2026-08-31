@@ -1,17 +1,23 @@
 import { Breadcrumbs, type BreadcrumbItem } from "@/components/ui/breadcrumbs";
+import { getScopedPath } from "@/lib/routes";
 import { CreateUserForm } from "./create-user-form";
 
-const breadcrumbs: BreadcrumbItem[] = [
-  {
-    label: "Користувачі",
-    href: "/admin/users",
-  },
-  {
-    label: "Додати користувача",
-  },
-];
+type CreateUserPageProps = Readonly<{
+  scope: string;
+}>;
 
-export function CreateUserPage() {
+export function CreateUserPage({ scope }: CreateUserPageProps) {
+  const usersRoute = getScopedPath(scope, "/users");
+  const breadcrumbs: BreadcrumbItem[] = [
+    {
+      label: "Користувачі",
+      href: usersRoute,
+    },
+    {
+      label: "Додати користувача",
+    },
+  ];
+
   return (
     <section className="h-full min-h-0 overflow-hidden bg-main-bg px-5 pt-4 pb-8 xl:px-0 xl:pt-0 xl:pr-7 desktop:pr-10 ultra:pr-14">
       <div className="grid h-full min-h-0 w-full grid-cols-[250px_minmax(420px,460px)_1fr] grid-rows-[auto_1fr] gap-x-6 pt-12 xl:grid-cols-[300px_minmax(440px,500px)_1fr] xl:gap-x-8 xl:pt-10 desktop:grid-cols-[390px_minmax(620px,640px)_1fr] desktop:gap-x-12 desktop:pt-14 ultra:grid-cols-[560px_minmax(700px,720px)_1fr] ultra:gap-x-16 ultra:pt-20">
@@ -24,7 +30,7 @@ export function CreateUserPage() {
         </div>
 
         <div className="col-start-2 row-start-2 flex min-h-0 items-start pt-10 xl:pt-8 desktop:col-start-2 desktop:row-start-1 desktop:row-end-3 desktop:items-center desktop:pt-0">
-          <CreateUserForm />
+          <CreateUserForm usersRoute={usersRoute} />
         </div>
       </div>
     </section>

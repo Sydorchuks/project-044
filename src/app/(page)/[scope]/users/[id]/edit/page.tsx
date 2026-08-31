@@ -1,13 +1,14 @@
 import { EditUserPage } from "@/components/users/edit-user-page";
 
-type EditUserRoutePageProps = {
+type EditUserRoutePageProps = Readonly<{
   params: Promise<{
+    scope: string;
     id: string;
   }>;
-};
+}>;
 
 export default async function EditUserRoutePage({ params }: EditUserRoutePageProps) {
-  const { id } = await params;
+  const { scope, id } = await params;
 
-  return <EditUserPage userId={Number(id)} />;
+  return <EditUserPage scope={scope} userId={Number(id)} />;
 }

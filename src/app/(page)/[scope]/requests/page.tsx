@@ -1,5 +1,5 @@
 import { DashboardNotFound } from "@/components/dashboard/dashboard-not-found";
 
-export default function MissingDashboardPage() {
+export default function RequestsPage() {
   return <DashboardNotFound />;
 }

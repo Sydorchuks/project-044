@@ -2,10 +2,18 @@ import { Suspense } from "react";
 
 import { UsersPage } from "@/components/users/users-page";
 
-export default function UsersRoutePage() {
+type UsersRoutePageProps = Readonly<{
+  params: Promise<{
+    scope: string;
+  }>;
+}>;
+
+export default async function UsersRoutePage({ params }: UsersRoutePageProps) {
+  const { scope } = await params;
+
   return (
     <Suspense fallback={<UsersPageFallback />}>
-      <UsersPage />
+      <UsersPage scope={scope} />
     </Suspense>
   );
 }

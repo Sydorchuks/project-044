@@ -9,60 +9,56 @@ import {
   Waypoints,
 } from "lucide-react";
 
-import type { NavigationItem } from "@/config/navigation/navigation.types";
+import type { NavigationItemDefinition } from "@/config/navigation/navigation.types";
 
 export const b2bClientNavigationItems = [
   {
     title: "Головна",
-    href: "/b2b/dashboard",
+    path: "/dashboard",
     icon: { type: "component", component: House },
     exact: true,
     showOnDashboard: false,
   },
   {
     title: "Розклад",
-    href: "/b2b/schedule",
+    path: "/schedule",
     icon: { type: "component", component: CalendarDays },
     showOnDashboard: true,
   },
   {
     title: "Бронювання",
-    href: "/b2b/reservations",
+    path: "/reservations",
     icon: { type: "component", component: Waypoints },
     showOnDashboard: true,
   },
   {
     title: "Клієнти",
-    href: "/b2b/clients",
+    path: "/clients",
     icon: { type: "component", component: UserRound },
     showOnDashboard: true,
   },
   {
     title: "Організації",
-    href: "/b2b/organizations",
+    path: "/organizations",
     icon: { type: "component", component: Grid3X3 },
     showOnDashboard: true,
   },
   {
     title: "Товари",
-    href: "/b2b/products",
+    path: "/products",
     icon: { type: "component", component: ShoppingBag },
     showOnDashboard: true,
   },
   {
     title: "Персонал",
-    href: "/b2b/staff",
+    path: "/staff",
     icon: { type: "component", component: UsersRound },
     showOnDashboard: true,
   },
   {
     title: "Статистика",
-    href: "/b2b/statistics",
+    path: "/statistics",
     icon: { type: "component", component: ChartNoAxesColumnIncreasing },
     showOnDashboard: true,
   },
-] as const satisfies readonly NavigationItem[];
-
-export const b2bClientDashboardItems: readonly NavigationItem[] = b2bClientNavigationItems.filter(
-  (item) => item.showOnDashboard,
-);
+] as const satisfies readonly NavigationItemDefinition[];

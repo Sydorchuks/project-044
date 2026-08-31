@@ -8,13 +8,16 @@ import { DeletedUserDetails } from "@/components/users/deleted-user-details";
 import { EditUserForm } from "@/components/users/edit-user-form";
 import { getUser } from "@/features/users/api/users.api";
 import { UserStatus } from "@/features/users/types/user.types";
+import { getScopedPath } from "@/lib/routes";
 import { cn } from "@/lib/utils";
 
 type EditUserPageProps = {
+  scope: string;
   userId: number;
 };
 
-export function EditUserPage({ userId }: EditUserPageProps) {
+export function EditUserPage({ scope, userId }: EditUserPageProps) {
+  const usersRoute = getScopedPath(scope, "/users");
   const isValidUserId = Number.isSafeInteger(userId) && userId > 0;
 
   const {
@@ -32,7 +35,7 @@ export function EditUserPage({ userId }: EditUserPageProps) {
   const breadcrumbs: BreadcrumbItem[] = [
     {
       label: "Користувачі",
-      href: "/admin/users",
+      href: usersRoute,
     },
     {
       label: `#${userId}`,
@@ -68,9 +71,9 @@ export function EditUserPage({ userId }: EditUserPageProps) {
             />
           )}
 
-          {user && !isDeleted && <EditUserForm user={user} />}
+          {user && !isDeleted && <EditUserForm user={user} usersRoute={usersRoute} />}
 
-          {user && isDeleted && <DeletedUserDetails user={user} />}
+          {user && isDeleted && <DeletedUserDetails user={user} usersRoute={usersRoute} />}
         </div>
       </div>
     </section>

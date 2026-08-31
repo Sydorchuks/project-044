@@ -1,19 +1,36 @@
-type RoleAccessProfile = Readonly<{
+import type { AppShellVariant } from "@/config/navigation/navigation.types";
+
+type RouteScopeConfig = Readonly<{
   homeRoute: string;
+  allowedSections: readonly string[];
+  shellVariant: AppShellVariant;
 }>;
 
 const LOGIN_ROUTE = "/login";
 
-const accessProfilesByScope = {
+export const routeConfigByScope = {
   admin: {
-    homeRoute: "/admin",
+    homeRoute: "/admin/dashboard",
+    allowedSections: ["dashboard", "users", "requests"],
+    shellVariant: "super-admin",
   },
   b2b: {
     homeRoute: "/b2b/dashboard",
+    allowedSections: [
+      "dashboard",
+      "schedule",
+      "reservations",
+      "clients",
+      "organizations",
+      "products",
+      "staff",
+      "statistics",
+    ],
+    shellVariant: "b2b",
   },
-} as const satisfies Record<string, RoleAccessProfile>;
+} as const satisfies Record<string, RouteScopeConfig>;
 
-type RouteScope = keyof typeof accessProfilesByScope;
+export type RouteScope = keyof typeof routeConfigByScope;
 
 const routeScopeByRole = {
   super_admin: "admin",
@@ -27,6 +44,14 @@ function isSupportedRole(role: string): role is SupportedRole {
   return Object.hasOwn(routeScopeByRole, role);
 }
 
+export function isRouteScope(scope: string): scope is RouteScope {
+  return Object.hasOwn(routeConfigByScope, scope);
+}
+
+export function getRouteScopeConfig(scope: RouteScope) {
+  return routeConfigByScope[scope];
+}
+
 function getRoleAccess(role?: string) {
   if (!role || !isSupportedRole(role)) {
     return null;
@@ -36,14 +61,24 @@ function getRoleAccess(role?: string) {
 
   return {
     scope,
-    profile: accessProfilesByScope[scope],
+    profile: routeConfigByScope[scope],
   };
 }
 
-function matchesRouteScope(pathname: string, scope: RouteScope) {
-  const scopeRoot = `/${scope}`;
+function getRouteParts(pathname: string) {
+  const [scope, section] = pathname.split("/").filter(Boolean);
 
-  return pathname === scopeRoot || pathname.startsWith(`${scopeRoot}/`);
+  return { scope, section };
+}
+
+function isRouteAllowed(pathname: string, scope: RouteScope, profile: RouteScopeConfig) {
+  const route = getRouteParts(pathname);
+
+  if (route.scope !== scope) {
+    return false;
+  }
+
+  return !route.section || profile.allowedSections.includes(route.section);
 }
 
 function getInternalPathname(route: string) {
@@ -78,7 +113,7 @@ export function getUnauthorizedRoute(role: string | undefined, pathname: string)
     return LOGIN_ROUTE;
   }
 
-  return matchesRouteScope(pathname, access.scope) ? null : access.profile.homeRoute;
+  return isRouteAllowed(pathname, access.scope, access.profile) ? null : access.profile.homeRoute;
 }
 
 export function getPostLoginRoute(role: string | undefined, requestedRoute?: string | null) {
@@ -91,7 +126,7 @@ export function getPostLoginRoute(role: string | undefined, requestedRoute?: str
   if (requestedRoute) {
     const pathname = getInternalPathname(requestedRoute);
 
-    if (pathname && matchesRouteScope(pathname, access.scope)) {
+    if (pathname && isRouteAllowed(pathname, access.scope, access.profile)) {
       return requestedRoute;
     }
   }

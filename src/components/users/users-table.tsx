@@ -10,6 +10,7 @@ import { useQueryParams } from "@/hooks/use-query-params";
 import { UsersSort, UsersSortField } from "@/features/users/schemas/use-search-params.schema";
 
 type UsersTableProps = {
+  usersRoute: string;
   users: User[];
   isLoading: boolean;
   error?: string;
@@ -21,6 +22,7 @@ type UsersTableProps = {
 };
 
 export function UsersTable({
+  usersRoute,
   users,
   isLoading,
   error,
@@ -33,10 +35,11 @@ export function UsersTable({
   const columns = useMemo(
     () =>
       createUsersTableColumns({
+        usersRoute,
         sort,
         onSortChange,
       }),
-    [sort, onSortChange],
+    [usersRoute, sort, onSortChange],
   );
 
   return (

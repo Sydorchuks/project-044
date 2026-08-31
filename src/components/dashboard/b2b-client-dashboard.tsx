@@ -1,6 +1,10 @@
 import { DashboardNavigationGrid } from "@/components/dashboard/dashboard-navigation-grid";
-import { b2bClientDashboardItems } from "@/config/navigation";
+import { getDashboardNavigationItems } from "@/config/navigation";
 
-export function B2BClientDashboard() {
-  return <DashboardNavigationGrid items={b2bClientDashboardItems} />;
+type B2BClientDashboardProps = Readonly<{
+  scope: string;
+}>;
+
+export function B2BClientDashboard({ scope }: B2BClientDashboardProps) {
+  return <DashboardNavigationGrid items={getDashboardNavigationItems("b2b", scope)} />;
 }

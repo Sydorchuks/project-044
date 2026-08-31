@@ -7,15 +7,16 @@ import type { User } from "@/features/users/types/user.types";
 
 type DeletedUserDetailsProps = {
   user: User;
+  usersRoute: string;
 };
 
-export function DeletedUserDetails({ user }: DeletedUserDetailsProps) {
+export function DeletedUserDetails({ user, usersRoute }: DeletedUserDetailsProps) {
   return (
     <div className="w-full max-w-162.5">
       <Button
         nativeButton={false}
         variant="link"
-        render={<Link href="/admin/users" />}
+        render={<Link href={usersRoute} />}
         className="mb-3.75 h-5 justify-start gap-1.25 p-0 font-sans text-[16px] leading-4.75 font-medium text-primary"
       >
         <ChevronLeft aria-hidden="true" className="size-5" />

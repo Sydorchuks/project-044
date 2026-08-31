@@ -1,6 +1,10 @@
 import { DashboardNavigationGrid } from "@/components/dashboard/dashboard-navigation-grid";
-import { superAdminDashboardItems } from "@/config/navigation";
+import { getDashboardNavigationItems } from "@/config/navigation";
 
-export function SuperAdminDashboard() {
-  return <DashboardNavigationGrid items={superAdminDashboardItems} />;
+type SuperAdminDashboardProps = Readonly<{
+  scope: string;
+}>;
+
+export function SuperAdminDashboard({ scope }: SuperAdminDashboardProps) {
+  return <DashboardNavigationGrid items={getDashboardNavigationItems("super-admin", scope)} />;
 }
