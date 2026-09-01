@@ -7,10 +7,9 @@ import type { User } from "@/features/users/types/user.types";
 
 type EditUserFormProps = {
   user: User;
-  usersRoute: string;
 };
 
-export function EditUserForm({ user, usersRoute }: EditUserFormProps) {
+export function EditUserForm({ user }: EditUserFormProps) {
   const {
     values,
     errors,
@@ -32,7 +31,7 @@ export function EditUserForm({ user, usersRoute }: EditUserFormProps) {
     handleDeleteDialogOpenChange,
     handleDelete,
     handleSubmit,
-  } = useEditUserForm(user, usersRoute);
+  } = useEditUserForm(user);
 
   return (
     <>

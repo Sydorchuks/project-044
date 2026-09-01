@@ -1,16 +1,21 @@
 "use client";
 
-import { useEffect, useSyncExternalStore, type ReactNode } from "react";
-import { usePathname, useRouter } from "next/navigation";
+import { createContext, useContext, useEffect, useSyncExternalStore, type ReactNode } from "react";
+import { useRouter } from "next/navigation";
 import { useQuery } from "@tanstack/react-query";
 import { LoaderCircle } from "lucide-react";
 import { getCurrentUser } from "@/features/auth/api/auth-api";
-import { getUnauthorizedRoute } from "@/features/auth/config/route-access";
+import { getUnauthorizedRoute, type UserRole } from "@/features/auth/config/route-access";
 import { clearAuthTokens, getAccessToken } from "@/features/auth/lib/auth-storage";
+import type { Account } from "@/features/auth/types/auth.types";
 
 type AuthGuardProps = Readonly<{
+  allowedRoles: readonly UserRole[];
   children: ReactNode;
+  redirectTo: string;
 }>;
+
+const AuthAccountContext = createContext<Account | null>(null);
 
 function subscribeToAuthStorage() {
   return () => undefined;
@@ -24,8 +29,7 @@ function getServerAccessTokenSnapshot() {
   return null;
 }
 
-export function AuthGuard({ children }: AuthGuardProps) {
-  const pathname = usePathname();
+export function AuthGuard({ allowedRoles, children, redirectTo }: AuthGuardProps) {
   const router = useRouter();
   const hasAccessToken = useSyncExternalStore<boolean | null>(
     subscribeToAuthStorage,
@@ -46,7 +50,9 @@ export function AuthGuard({ children }: AuthGuardProps) {
     enabled: hasAccessToken === true,
   });
 
-  const unauthorizedRoute = account ? getUnauthorizedRoute(account.role?.name, pathname) : null;
+  const unauthorizedRoute = account
+    ? getUnauthorizedRoute(account.role?.name, allowedRoles, redirectTo)
+    : null;
 
   useEffect(() => {
     if (hasAccessToken === false || isError) {
@@ -63,7 +69,7 @@ export function AuthGuard({ children }: AuthGuardProps) {
     }
   }, [hasAccessToken, isError, router, unauthorizedRoute]);
 
-  if (hasAccessToken !== true || isPending || isError || unauthorizedRoute) {
+  if (hasAccessToken !== true || isPending || isError || !account || unauthorizedRoute) {
     return (
       <div className="grid min-h-dvh place-items-center bg-main-bg" role="status">
         <LoaderCircle aria-hidden="true" className="size-8 animate-spin text-primary" />
@@ -72,5 +78,15 @@ export function AuthGuard({ children }: AuthGuardProps) {
     );
   }
 
-  return children;
+  return <AuthAccountContext.Provider value={account}>{children}</AuthAccountContext.Provider>;
+}
+
+export function useAuthenticatedAccount() {
+  const account = useContext(AuthAccountContext);
+
+  if (!account) {
+    throw new Error("useAuthenticatedAccount must be used within AuthGuard");
+  }
+
+  return account;
 }

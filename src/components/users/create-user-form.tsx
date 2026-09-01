@@ -3,13 +3,9 @@
 import { useCreateUserForm } from "@/features/users/hooks/use-create-user-form";
 import { UserForm } from "./user-form";
 
-type CreateUserFormProps = Readonly<{
-  usersRoute: string;
-}>;
-
-export function CreateUserForm({ usersRoute }: CreateUserFormProps) {
+export function CreateUserForm() {
   const { values, errors, isSubmitting, setField, handleCancel, handleSubmit } =
-    useCreateUserForm(usersRoute);
+    useCreateUserForm();
 
   return (
     <UserForm

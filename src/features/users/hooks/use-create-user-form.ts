@@ -18,7 +18,7 @@ const initialValues: UserFormValues = {
   description: "",
 };
 
-export function useCreateUserForm(usersRoute: string) {
+export function useCreateUserForm() {
   const router = useRouter();
 
   const { values, errors, isSubmitting, setField, createSubmitHandler } = useFormState({
@@ -27,12 +27,12 @@ export function useCreateUserForm(usersRoute: string) {
   });
 
   function redirectToUsers() {
-    router.push(usersRoute);
+    router.push("/users");
     router.refresh();
   }
 
   function handleCancel() {
-    router.push(usersRoute);
+    router.push("/users");
   }
 
   async function submitUser(values: UserFormValues) {

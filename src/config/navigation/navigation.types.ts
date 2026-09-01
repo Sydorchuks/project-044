@@ -19,11 +19,3 @@ export type NavigationItem = Readonly<{
   exact?: boolean;
   showOnDashboard: boolean;
 }>;
-
-export type NavigationItemDefinition = Readonly<{
-  title: string;
-  path: string;
-  icon: NavigationIcon;
-  exact?: boolean;
-  showOnDashboard: boolean;
-}>;

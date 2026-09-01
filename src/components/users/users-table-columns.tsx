@@ -11,7 +11,6 @@ import { cn } from "@/lib/utils";
 import type { UsersSort, UsersSortField } from "@/features/users/schemas/use-search-params.schema";
 
 type CreateUsersTableColumnsOptions = {
-  usersRoute: string;
   sort: UsersSort;
   onSortChange: (field: UsersSortField) => void;
 };
@@ -25,11 +24,7 @@ type SortableColumnHeaderProps = {
 
 const columnHelper = createColumnHelper<typeof dataTableFeatures, User>();
 
-export function createUsersTableColumns({
-  usersRoute,
-  sort,
-  onSortChange,
-}: CreateUsersTableColumnsOptions) {
+export function createUsersTableColumns({ sort, onSortChange }: CreateUsersTableColumnsOptions) {
   return columnHelper.columns([
     columnHelper.accessor("id", {
       header: () => (
@@ -104,7 +99,7 @@ export function createUsersTableColumns({
       cell: ({ row }) => (
         <Button
           nativeButton={false}
-          render={<Link href={`${usersRoute}/${row.original.id}/edit`} />}
+          render={<Link href={`/users/${row.original.id}/edit`} />}
           className="h-6 rounded-full bg-[#ABB3BF] px-3 text-[12px] text-white transition-colors hover:bg-primary hover:text-primary-foreground"
         >
           Редагувати

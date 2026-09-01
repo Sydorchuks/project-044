@@ -1,84 +1,52 @@
 import type { AppShellVariant } from "@/config/navigation/navigation.types";
 
-type RouteScopeConfig = Readonly<{
-  homeRoute: string;
-  allowedSections: readonly string[];
-  shellVariant: AppShellVariant;
-}>;
+export const UserRole = {
+  SUPER_ADMIN: "super_admin",
+  SUPERUSER: "superuser",
+  USER_FULL: "user_full",
+} as const;
+
+export type UserRole = (typeof UserRole)[keyof typeof UserRole];
+
+export const ADMIN_ROLES = [UserRole.SUPER_ADMIN, UserRole.SUPERUSER] as const;
+export const B2B_ROLES = [UserRole.USER_FULL] as const;
+export const AUTHENTICATED_ROLES = [...ADMIN_ROLES, ...B2B_ROLES] as const;
 
 const LOGIN_ROUTE = "/login";
+const DASHBOARD_ROUTE = "/dashboard";
 
-export const routeConfigByScope = {
-  admin: {
-    homeRoute: "/admin/dashboard",
-    allowedSections: ["dashboard", "users", "requests"],
-    shellVariant: "super-admin",
-  },
-  b2b: {
-    homeRoute: "/b2b/dashboard",
-    allowedSections: [
-      "dashboard",
-      "schedule",
-      "reservations",
-      "clients",
-      "organizations",
-      "products",
-      "staff",
-      "statistics",
-    ],
-    shellVariant: "b2b",
-  },
-} as const satisfies Record<string, RouteScopeConfig>;
+const dashboardVariantByRole = {
+  [UserRole.SUPER_ADMIN]: "super-admin",
+  [UserRole.SUPERUSER]: "super-admin",
+  [UserRole.USER_FULL]: "b2b",
+} as const satisfies Record<UserRole, AppShellVariant>;
 
-export type RouteScope = keyof typeof routeConfigByScope;
+const routeAccessRules = [
+  { route: "/", roles: AUTHENTICATED_ROLES },
+  { route: DASHBOARD_ROUTE, roles: AUTHENTICATED_ROLES },
+  { route: "/users", roles: ADMIN_ROLES },
+  { route: "/requests", roles: ADMIN_ROLES },
+  { route: "/schedule", roles: B2B_ROLES },
+  { route: "/reservations", roles: B2B_ROLES },
+  { route: "/clients", roles: B2B_ROLES },
+  { route: "/organizations", roles: B2B_ROLES },
+  { route: "/products", roles: B2B_ROLES },
+  { route: "/staff", roles: B2B_ROLES },
+  { route: "/statistics", roles: B2B_ROLES },
+] as const;
 
-const routeScopeByRole = {
-  super_admin: "admin",
-  superuser: "admin",
-  user_full: "b2b",
-} as const satisfies Record<string, RouteScope>;
-
-type SupportedRole = keyof typeof routeScopeByRole;
-
-function isSupportedRole(role: string): role is SupportedRole {
-  return Object.hasOwn(routeScopeByRole, role);
+function isUserRole(role: string): role is UserRole {
+  return Object.hasOwn(dashboardVariantByRole, role);
 }
 
-export function isRouteScope(scope: string): scope is RouteScope {
-  return Object.hasOwn(routeConfigByScope, scope);
+function matchesRoute(pathname: string, route: string) {
+  return pathname === route || (route !== "/" && pathname.startsWith(`${route}/`));
 }
 
-export function getRouteScopeConfig(scope: RouteScope) {
-  return routeConfigByScope[scope];
-}
+function isRouteAllowed(role: UserRole, pathname: string) {
+  const rule = routeAccessRules.find(({ route }) => matchesRoute(pathname, route));
 
-function getRoleAccess(role?: string) {
-  if (!role || !isSupportedRole(role)) {
-    return null;
-  }
-
-  const scope = routeScopeByRole[role];
-
-  return {
-    scope,
-    profile: routeConfigByScope[scope],
-  };
-}
-
-function getRouteParts(pathname: string) {
-  const [scope, section] = pathname.split("/").filter(Boolean);
-
-  return { scope, section };
-}
-
-function isRouteAllowed(pathname: string, scope: RouteScope, profile: RouteScopeConfig) {
-  const route = getRouteParts(pathname);
-
-  if (route.scope !== scope) {
-    return false;
-  }
-
-  return !route.section || profile.allowedSections.includes(route.section);
+  return rule?.roles.some((allowedRole) => allowedRole === role) ?? false;
 }
 
 function getInternalPathname(route: string) {
@@ -106,30 +74,34 @@ function getInternalPathname(route: string) {
   }
 }
 
-export function getUnauthorizedRoute(role: string | undefined, pathname: string) {
-  const access = getRoleAccess(role);
+export function getDashboardVariant(role?: string) {
+  return role && isUserRole(role) ? dashboardVariantByRole[role] : null;
+}
 
-  if (!access) {
+export function getUnauthorizedRoute(
+  role: string | undefined,
+  allowedRoles: readonly UserRole[],
+  redirectTo: string,
+) {
+  if (!role || !isUserRole(role)) {
     return LOGIN_ROUTE;
   }
 
-  return isRouteAllowed(pathname, access.scope, access.profile) ? null : access.profile.homeRoute;
+  return allowedRoles.includes(role) ? null : redirectTo;
 }
 
 export function getPostLoginRoute(role: string | undefined, requestedRoute?: string | null) {
-  const access = getRoleAccess(role);
-
-  if (!access) {
+  if (!role || !isUserRole(role)) {
     return LOGIN_ROUTE;
   }
 
   if (requestedRoute) {
     const pathname = getInternalPathname(requestedRoute);
 
-    if (pathname && isRouteAllowed(pathname, access.scope, access.profile)) {
+    if (pathname && isRouteAllowed(role, pathname)) {
       return requestedRoute;
     }
   }
 
-  return access.profile.homeRoute;
+  return DASHBOARD_ROUTE;
 }

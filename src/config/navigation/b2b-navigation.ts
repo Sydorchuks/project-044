@@ -9,56 +9,60 @@ import {
   Waypoints,
 } from "lucide-react";
 
-import type { NavigationItemDefinition } from "@/config/navigation/navigation.types";
+import type { NavigationItem } from "@/config/navigation/navigation.types";
 
 export const b2bClientNavigationItems = [
   {
     title: "Головна",
-    path: "/dashboard",
+    href: "/dashboard",
     icon: { type: "component", component: House },
     exact: true,
     showOnDashboard: false,
   },
   {
     title: "Розклад",
-    path: "/schedule",
+    href: "/schedule",
     icon: { type: "component", component: CalendarDays },
     showOnDashboard: true,
   },
   {
     title: "Бронювання",
-    path: "/reservations",
+    href: "/reservations",
     icon: { type: "component", component: Waypoints },
     showOnDashboard: true,
   },
   {
     title: "Клієнти",
-    path: "/clients",
+    href: "/clients",
     icon: { type: "component", component: UserRound },
     showOnDashboard: true,
   },
   {
     title: "Організації",
-    path: "/organizations",
+    href: "/organizations",
     icon: { type: "component", component: Grid3X3 },
     showOnDashboard: true,
   },
   {
     title: "Товари",
-    path: "/products",
+    href: "/products",
     icon: { type: "component", component: ShoppingBag },
     showOnDashboard: true,
   },
   {
     title: "Персонал",
-    path: "/staff",
+    href: "/staff",
     icon: { type: "component", component: UsersRound },
     showOnDashboard: true,
   },
   {
     title: "Статистика",
-    path: "/statistics",
+    href: "/statistics",
     icon: { type: "component", component: ChartNoAxesColumnIncreasing },
     showOnDashboard: true,
   },
-] as const satisfies readonly NavigationItemDefinition[];
+] as const satisfies readonly NavigationItem[];
+
+export const b2bClientDashboardItems: readonly NavigationItem[] = b2bClientNavigationItems.filter(
+  (item) => item.showOnDashboard,
+);

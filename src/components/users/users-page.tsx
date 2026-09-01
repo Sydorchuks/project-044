@@ -7,7 +7,6 @@ import type { FormEvent } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { UsersTable } from "@/components/users/users-table";
-import { getScopedPath } from "@/lib/routes";
 import { useUsersPage } from "@/features/users/hooks/use-users-page";
 import { cn } from "@/lib/utils";
 
@@ -15,13 +14,8 @@ const CONTROL_BUTTON_CLASS_NAME = "desktop:h-11 h-10 rounded-3xl font-sans text-
 const SECONDARY_BUTTON_CLASS_NAME =
   "bg-action-muted text-primary-foreground hover:bg-action-muted/80";
 
-type UsersPageProps = Readonly<{
-  scope: string;
-}>;
-
-export function UsersPage({ scope }: UsersPageProps) {
+export function UsersPage() {
   const router = useRouter();
-  const usersRoute = getScopedPath(scope, "/users");
 
   const {
     users,
@@ -38,7 +32,7 @@ export function UsersPage({ scope }: UsersPageProps) {
   } = useUsersPage();
 
   function handleCreateUser() {
-    router.push(`${usersRoute}/create`);
+    router.push("/users/create");
   }
 
   function handleSearchSubmit(event: FormEvent<HTMLFormElement>) {
@@ -120,7 +114,6 @@ export function UsersPage({ scope }: UsersPageProps) {
         </div>
 
         <UsersTable
-          usersRoute={usersRoute}
           users={users}
           isLoading={isLoading}
           error={error}
