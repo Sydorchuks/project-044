@@ -14,6 +14,8 @@ import { useNavigationBlocker } from "@/hooks/use-navigation-blocker";
 
 export type EditUserFormErrors = FormErrors<UserFormValues>;
 
+const USERS_ROUTE = "/users";
+
 export function useEditUserForm(user: User) {
   const router = useRouter();
   const queryClient = useQueryClient();
@@ -56,7 +58,7 @@ export function useEditUserForm(user: User) {
   });
 
   function redirectToUsers() {
-    router.push("/users");
+    router.push(USERS_ROUTE);
   }
 
   function handleCancel() {
@@ -66,7 +68,7 @@ export function useEditUserForm(user: User) {
     }
 
     setSaveError("");
-    setPendingHref("/users");
+    setPendingHref(USERS_ROUTE);
     setIsCloseDialogOpen(true);
   }
 
@@ -120,11 +122,11 @@ export function useEditUserForm(user: User) {
   }
 
   async function handleSave() {
-    await saveChanges("/users");
+    await saveChanges(USERS_ROUTE);
   }
 
   async function handleSaveBeforeClose() {
-    await saveChanges(pendingHref ?? "/users");
+    await saveChanges(pendingHref ?? USERS_ROUTE);
   }
 
   function handleDeleteRequest() {

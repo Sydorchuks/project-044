@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { AxiosError } from "axios";
 
 import { login } from "@/features/auth/api/auth-api";
+import { getPostLoginRoute } from "@/features/auth/config/route-access";
 import { saveAuthTokens } from "@/features/auth/lib/auth-storage";
 import { loginSchema, type LoginFormValues } from "@/features/auth/schemas/login-schema";
 
@@ -93,7 +94,9 @@ export function useLoginForm() {
         rememberMe: values.remember,
       });
 
-      router.push("/");
+      const requestedRoute = new URLSearchParams(window.location.search).get("redirectTo");
+
+      router.replace(getPostLoginRoute(data.account.role?.name, requestedRoute));
     } catch (error) {
       setErrors(getLoginError(error));
     } finally {
