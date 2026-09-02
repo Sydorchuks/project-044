@@ -2,7 +2,7 @@ import { ComponentProps, ReactNode } from "react";
 import { Input } from "../ui/input";
 import { cn } from "@/lib/utils";
 
-type LoginInputProps = ComponentProps<typeof Input> & {
+export type LoginInputProps = ComponentProps<typeof Input> & {
   label: string;
   error?: string;
   errorId: string;

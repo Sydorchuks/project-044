@@ -4,9 +4,9 @@ import { useRouter } from "next/navigation";
 import { isAxiosError } from "axios";
 import { createUser } from "@/features/users/api/users.api";
 import { userFormSchema, type UserFormValues } from "@/features/users/schemas/user-form-schema";
+import { saveActivationUrl } from "@/features/users/lib/activation-link";
 import type { CreateUserPayload } from "@/features/users/types/user.types";
 import { type FormErrors, useFormState } from "@/hooks/use-form-state";
-import { USER_ROLES } from "@/features/constants/user.constants";
 
 export type CreateUserFormErrors = FormErrors<UserFormValues>;
 const initialValues: UserFormValues = {
@@ -37,8 +37,15 @@ export function useCreateUserForm() {
 
   async function submitUser(values: UserFormValues) {
     const payload = toCreateUserPayload(values);
+    const result = await createUser(payload);
 
-    await createUser(payload);
+    if (process.env.NODE_ENV === "development" && result.verify_token) {
+      const activationUrl = new URL("/activate-account", window.location.origin);
+
+      activationUrl.searchParams.set("verify_token", result.verify_token);
+      saveActivationUrl(activationUrl.toString());
+    }
+
     redirectToUsers();
   }
 
@@ -50,7 +57,6 @@ export function useCreateUserForm() {
 function toCreateUserPayload(values: UserFormValues): CreateUserPayload {
   return {
     email: values.email.trim(),
-    roleId: USER_ROLES.SUPER_ADMIN,
     user: {
       first_name: values.firstName.trim(),
       last_name: values.lastName.trim(),

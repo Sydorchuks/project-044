@@ -2,12 +2,13 @@
 
 import { Download, Plus, Search } from "lucide-react";
 import { useRouter } from "next/navigation";
-import type { FormEvent } from "react";
+import { useEffect, type FormEvent } from "react";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { UsersTable } from "@/components/users/users-table";
 import { useUsersPage } from "@/features/users/hooks/use-users-page";
+import { logSavedActivationUrl } from "@/features/users/lib/activation-link";
 import { cn } from "@/lib/utils";
 
 const CONTROL_BUTTON_CLASS_NAME = "desktop:h-11 h-10 rounded-3xl font-sans text-[14px] font-bold";
@@ -16,6 +17,10 @@ const SECONDARY_BUTTON_CLASS_NAME =
 
 export function UsersPage() {
   const router = useRouter();
+
+  useEffect(() => {
+    logSavedActivationUrl();
+  }, []);
 
   const {
     users,
