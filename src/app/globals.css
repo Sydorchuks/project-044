@@ -66,6 +66,9 @@
   --color-text-subtle: var(--text-subtle);
   --color-text-error: var(--text-error);
 
+  --color-organization-card-title: var(--organization-card-title);
+  --color-organization-card-description: var(--organization-card-description);
+
   --color-field-border: var(--field-border);
   --color-field-placeholder: var(--field-placeholder);
 
@@ -156,6 +159,10 @@
   --text-subtle: #abb3bf;
   --text-error: #ac2f33;
 
+  --organization-card-title: #000000;
+  --organization-card-description: #5f6b7c;
+  --organization-placeholder-end: #b4a2ff;
+
   --field-border: #abb3bf;
   --field-placeholder: #abb3bf;
 
@@ -230,6 +237,10 @@
   --text-muted: #abb3bf;
   --text-subtle: #738091;
   --text-error: #e76a6e;
+
+  --organization-card-title: #f6f7f9;
+  --organization-card-description: #abb3bf;
+  --organization-placeholder-end: #8bbcff;
 
   --field-border: #383e47;
   --field-placeholder: #abb3bf;

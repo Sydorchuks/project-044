@@ -1,5 +1,5 @@
-import { DashboardNotFound } from "@/components/dashboard/dashboard-not-found";
+import { OrganizationsPage } from "@/components/organizations/organizations-page";
 
-export default function OrganizationsPage() {
-  return <DashboardNotFound />;
+export default function OrganizationsRoutePage() {
+  return <OrganizationsPage />;
 }
