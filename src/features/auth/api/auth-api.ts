@@ -8,6 +8,20 @@ export async function login(payload: LoginPayload) {
   return data;
 }
 
+export async function verifyAccount(verifyToken: string, newPassword: string) {
+  const { data } = await apiClient.post<LoginResponse>(
+    "api/auth/verify",
+    { new_password: newPassword },
+    {
+      headers: {
+        Authorization: `Bearer ${verifyToken}`,
+      },
+    },
+  );
+
+  return data;
+}
+
 export async function getCurrentUser() {
   const { data } = await apiClient.get<Account>("api/auth/user");
 

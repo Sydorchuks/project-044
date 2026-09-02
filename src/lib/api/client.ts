@@ -11,7 +11,7 @@ export const apiClient = axios.create({
 apiClient.interceptors.request.use((config) => {
   const accessToken = getAccessToken();
 
-  if (accessToken) {
+  if (accessToken && !config.headers.Authorization) {
     config.headers.Authorization = `Bearer ${accessToken}`;
   }
 
@@ -21,7 +21,11 @@ apiClient.interceptors.request.use((config) => {
 apiClient.interceptors.response.use(
   (response) => response,
   (error: AxiosError) => {
-    if (error.response?.status === 401 && typeof window !== "undefined") {
+    const accessToken = getAccessToken();
+    const authorization = error.config?.headers.Authorization;
+    const usedAccessToken = accessToken && authorization === `Bearer ${accessToken}`;
+
+    if (error.response?.status === 401 && usedAccessToken && typeof window !== "undefined") {
       clearAuthTokens();
 
       const currentPath = window.location.pathname + window.location.search;

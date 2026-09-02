@@ -47,7 +47,6 @@ export type GetUsersParams = {
 
 export type CreateUserPayload = {
   email: string;
-  roleId: number;
   user: {
     first_name: string;
     last_name: string;
@@ -58,7 +57,7 @@ export type CreateUserPayload = {
 };
 
 export type CreateUserResponse = {
-  reset_token?: string;
+  verify_token?: string;
 };
 
 export type UpdateUserPayload = {
