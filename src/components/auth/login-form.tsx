@@ -1,12 +1,12 @@
 "use client";
 
-import { useId, useState } from "react";
+import { useId } from "react";
 
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { useLoginForm } from "@/features/auth/hooks/use-login-form";
 import LoginInput from "./login-input";
-import { PasswordVisibilityButton } from "./password-visibility-button";
+import { PasswordInput } from "./password-input";
 
 type LoginFormProps = Readonly<{
   isAccountActivated?: boolean;
@@ -17,8 +17,6 @@ export function LoginForm({ isAccountActivated = false }: LoginFormProps) {
   const passwordId = useId();
   const emailErrorId = useId();
   const passwordErrorId = useId();
-
-  const [isPasswordVisible, setIsPasswordVisible] = useState(false);
 
   const { values, errors, isSubmitting, updateValue, handleSubmit } = useLoginForm();
 
@@ -59,22 +57,15 @@ export function LoginForm({ isAccountActivated = false }: LoginFormProps) {
           onChange={(event) => updateValue("email", event.target.value)}
         />
 
-        <LoginInput
+        <PasswordInput
           id={passwordId}
           label="Пароль*"
           error={errors.password}
           errorId={passwordErrorId}
-          type={isPasswordVisible ? "text" : "password"}
           autoComplete="current-password"
           value={values.password}
           placeholder="Ваш пароль"
           onChange={(event) => updateValue("password", event.target.value)}
-          endAdornment={
-            <PasswordVisibilityButton
-              isVisible={isPasswordVisible}
-              onToggle={() => setIsPasswordVisible((isVisible) => !isVisible)}
-            />
-          }
         />
       </div>
 

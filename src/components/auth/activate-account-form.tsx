@@ -1,11 +1,10 @@
 "use client";
 
-import { useId, useState } from "react";
+import { useId } from "react";
 
 import { Button } from "@/components/ui/button";
 import { useActivateAccountForm } from "@/features/auth/hooks/use-activate-account-form";
-import LoginInput from "./login-input";
-import { PasswordVisibilityButton } from "./password-visibility-button";
+import { PasswordInput } from "./password-input";
 
 type ActivateAccountFormProps = Readonly<{
   verifyToken?: string;
@@ -16,8 +15,6 @@ export function ActivateAccountForm({ verifyToken }: ActivateAccountFormProps) {
   const confirmPasswordId = useId();
   const passwordErrorId = useId();
   const confirmPasswordErrorId = useId();
-  const [isPasswordVisible, setIsPasswordVisible] = useState(false);
-  const [isConfirmPasswordVisible, setIsConfirmPasswordVisible] = useState(false);
   const { values, errors, isSubmitting, setField, handleSubmit } =
     useActivateAccountForm(verifyToken);
 
@@ -46,42 +43,28 @@ export function ActivateAccountForm({ verifyToken }: ActivateAccountFormProps) {
       ) : null}
 
       <div className="flex flex-col gap-6.25">
-        <LoginInput
+        <PasswordInput
           id={passwordId}
           label="Пароль*"
           error={errors.password}
           errorId={passwordErrorId}
-          type={isPasswordVisible ? "text" : "password"}
           autoComplete="new-password"
           value={values.password}
           placeholder="Створіть пароль"
           disabled={!verifyToken || isSubmitting}
           onChange={(event) => setField("password", event.target.value)}
-          endAdornment={
-            <PasswordVisibilityButton
-              isVisible={isPasswordVisible}
-              onToggle={() => setIsPasswordVisible((isVisible) => !isVisible)}
-            />
-          }
         />
 
-        <LoginInput
+        <PasswordInput
           id={confirmPasswordId}
           label="Підтвердження пароля*"
           error={errors.confirmPassword}
           errorId={confirmPasswordErrorId}
-          type={isConfirmPasswordVisible ? "text" : "password"}
           autoComplete="new-password"
           value={values.confirmPassword}
           placeholder="Повторіть пароль"
           disabled={!verifyToken || isSubmitting}
           onChange={(event) => setField("confirmPassword", event.target.value)}
-          endAdornment={
-            <PasswordVisibilityButton
-              isVisible={isConfirmPasswordVisible}
-              onToggle={() => setIsConfirmPasswordVisible((isVisible) => !isVisible)}
-            />
-          }
         />
       </div>
 
