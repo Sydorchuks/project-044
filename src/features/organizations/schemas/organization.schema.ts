@@ -11,3 +11,5 @@ export const organizationSchema = z.object({
 });
 
 export const organizationsSchema = z.array(organizationSchema);
+
+export type Organization = z.infer<typeof organizationSchema>;

@@ -1,7 +1,6 @@
 import { ImageIcon } from "lucide-react";
-
 import { Button } from "@/components/ui/button";
-import type { Organization } from "@/features/organizations/types/organization.types";
+import { Organization } from "@/features/organizations/schemas/organization.schema";
 
 type OrganizationCardProps = Readonly<{
   organization: Organization;
