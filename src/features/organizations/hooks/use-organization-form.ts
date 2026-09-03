@@ -41,24 +41,27 @@ export function useOrganizationForm({ organization }: UseOrganizationFormOptions
   const [isImageRemoved, setIsImageRemoved] = useState(false);
   const [dialog, setDialog] = useState<OrganizationDialog | null>(null);
   const [dialogError, setDialogError] = useState("");
-  const [isProcessing, setIsProcessing] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
   const [isNavigating, setIsNavigating] = useState(false);
   const operationRef = useRef(false);
 
   const {
     values,
     errors,
-    isSubmitting: isValidating,
+    isDirty,
+    isValidating,
+    isSubmitting,
     setField,
+    runSubmit,
+    createValidationHandler,
     createSubmitHandler,
   } = useFormState({
     initialValues,
     schema: organizationFormSchema,
+    hasExternalChanges: Boolean(image) || isImageRemoved,
   });
 
-  const isSubmitting = isValidating || isProcessing || isNavigating;
-  const isDirty =
-    JSON.stringify(values) !== JSON.stringify(initialValues) || Boolean(image) || isImageRemoved;
+  const isProcessing = isValidating || isSubmitting || isDeleting || isNavigating;
 
   const handleNavigationBlocked = useCallback((href: string) => {
     setDialogError("");
@@ -66,7 +69,7 @@ export function useOrganizationForm({ organization }: UseOrganizationFormOptions
   }, []);
 
   useNavigationBlocker({
-    enabled: isDirty && !isSubmitting,
+    enabled: isDirty && !isProcessing,
     onBlock: handleNavigationBlocked,
   });
 
@@ -77,7 +80,7 @@ export function useOrganizationForm({ organization }: UseOrganizationFormOptions
   }
 
   function handleCancel() {
-    if (isSubmitting) {
+    if (isProcessing) {
       return;
     }
 
@@ -92,7 +95,7 @@ export function useOrganizationForm({ organization }: UseOrganizationFormOptions
   }
 
   function handleImageChange(file: File | null) {
-    if (isSubmitting) {
+    if (isProcessing) {
       return;
     }
 
@@ -134,44 +137,39 @@ export function useOrganizationForm({ organization }: UseOrganizationFormOptions
   }
 
   async function requestSave(validatedValues: OrganizationFormValues) {
-    if (organization) {
-      setDialogError("");
-      setDialog({ type: "save", values: validatedValues });
-      return;
-    }
-
-    await submitOrganization(validatedValues);
+    setDialogError("");
+    setDialog({ type: "save", values: validatedValues });
   }
 
   function handleDeleteRequest() {
-    if (organization && !isSubmitting) {
+    if (organization && !isProcessing) {
       setDialogError("");
       setDialog({ type: "delete" });
     }
   }
 
   function handleImageDeleteRequest() {
-    if (organization?.photo && !isSubmitting) {
+    if (organization?.photo && !isProcessing) {
       setDialogError("");
       setDialog({ type: "removeImage" });
     }
   }
 
   function handleImageRestore() {
-    if (!isSubmitting) {
+    if (!isProcessing) {
       setIsImageRemoved(false);
     }
   }
 
   function handleDialogOpenChange(open: boolean) {
-    if (!open && !isSubmitting && !operationRef.current) {
+    if (!open && !isProcessing && !operationRef.current) {
       setDialog(null);
       setDialogError("");
     }
   }
 
   async function handleConfirm() {
-    if (!dialog || isSubmitting || operationRef.current) {
+    if (!dialog || isProcessing || operationRef.current) {
       return;
     }
 
@@ -189,13 +187,13 @@ export function useOrganizationForm({ organization }: UseOrganizationFormOptions
     }
 
     operationRef.current = true;
-    setIsProcessing(true);
     setDialogError("");
 
     try {
       if (dialog.type === "save") {
-        await submitOrganization(dialog.values);
+        await runSubmit(() => submitOrganization(dialog.values));
       } else if (organization) {
+        setIsDeleting(true);
         await deleteOrganization(organization.id);
         queryClient.setQueryData<Organization[]>(["organizations"], (current) =>
           current?.filter((item) => item.id !== organization.id),
@@ -211,11 +209,13 @@ export function useOrganizationForm({ organization }: UseOrganizationFormOptions
       );
     } finally {
       operationRef.current = false;
-      setIsProcessing(false);
+      setIsDeleting(false);
     }
   }
 
-  const handleSubmit = createSubmitHandler(requestSave, getOrganizationFormError);
+  const handleSubmit = organization
+    ? createValidationHandler(requestSave, getOrganizationFormError)
+    : createSubmitHandler(submitOrganization, getOrganizationFormError);
 
   return {
     values,
@@ -223,6 +223,9 @@ export function useOrganizationForm({ organization }: UseOrganizationFormOptions
     image,
     imageError,
     isSubmitting,
+    isValidating,
+    isNavigating,
+    isProcessing,
     isImageRemoved,
     dialog,
     dialogError,

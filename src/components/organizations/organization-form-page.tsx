@@ -14,10 +14,6 @@ type OrganizationFormPageProps = Readonly<
 
 export function OrganizationFormPage({ mode, organizationId }: OrganizationFormPageProps) {
   const isEditMode = mode === "edit";
-  const isValidId =
-    typeof organizationId === "number" &&
-    Number.isSafeInteger(organizationId) &&
-    organizationId > 0;
   const {
     data: organization,
     isFetchedAfterMount,
@@ -25,7 +21,7 @@ export function OrganizationFormPage({ mode, organizationId }: OrganizationFormP
     refetch,
   } = useQuery({
     queryKey: ["organizations", "detail", organizationId, "edit"],
-    queryFn: isEditMode && isValidId ? () => getOrganization(organizationId) : skipToken,
+    queryFn: organizationId !== undefined ? () => getOrganization(organizationId) : skipToken,
     staleTime: Infinity,
     refetchOnMount: "always",
     refetchOnWindowFocus: false,
@@ -50,23 +46,21 @@ export function OrganizationFormPage({ mode, organizationId }: OrganizationFormP
       <div className="mx-auto mt-7.5 flex max-w-[650px] justify-center desktop:translate-x-3.5">
         {!isEditMode ? <OrganizationForm mode="create" /> : null}
 
-        {isEditMode && (!isValidId || isError) ? (
+        {isEditMode && isError ? (
           <div className="grid min-h-80 w-full place-items-center rounded-2xl bg-background p-8 text-center shadow-organization-form">
             <div>
               <p className="text-[16px] leading-5 text-text-error">
                 Не вдалося завантажити організацію
               </p>
 
-              {isValidId ? (
-                <Button type="button" variant="outline" onClick={() => refetch()} className="mt-4">
-                  Спробувати ще раз
-                </Button>
-              ) : null}
+              <Button type="button" variant="outline" onClick={() => refetch()} className="mt-4">
+                Спробувати ще раз
+              </Button>
             </div>
           </div>
         ) : null}
 
-        {isEditMode && isValidId && !isFetchedAfterMount && !isError ? (
+        {isEditMode && !isFetchedAfterMount && !isError ? (
           <Skeleton
             aria-label="Завантаження організації"
             role="status"
@@ -74,7 +68,7 @@ export function OrganizationFormPage({ mode, organizationId }: OrganizationFormP
           />
         ) : null}
 
-        {isEditMode && isValidId && isFetchedAfterMount && !isError && organization ? (
+        {isEditMode && isFetchedAfterMount && !isError && organization ? (
           <OrganizationForm key={organization.id} mode="edit" organization={organization} />
         ) : null}
       </div>

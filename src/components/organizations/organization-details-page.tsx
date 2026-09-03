@@ -17,7 +17,6 @@ export function OrganizationDetailsPage({
   organizationId,
   imageUploadFailed,
 }: OrganizationDetailsPageProps) {
-  const isValidId = Number.isInteger(organizationId);
   const {
     data: organization,
     isPending,
@@ -26,10 +25,9 @@ export function OrganizationDetailsPage({
   } = useQuery({
     queryKey: ["organizations", "detail", organizationId],
     queryFn: () => getOrganization(organizationId),
-    enabled: isValidId,
   });
 
-  if (!isValidId || isError) {
+  if (isError) {
     return (
       <section className="grid min-h-full place-items-center bg-main-bg px-5 text-center">
         <div>
@@ -37,11 +35,9 @@ export function OrganizationDetailsPage({
             Не вдалося завантажити організацію
           </p>
 
-          {isValidId ? (
-            <Button type="button" variant="outline" onClick={() => refetch()} className="mt-4">
-              Спробувати ще раз
-            </Button>
-          ) : null}
+          <Button type="button" variant="outline" onClick={() => refetch()} className="mt-4">
+            Спробувати ще раз
+          </Button>
         </div>
       </section>
     );

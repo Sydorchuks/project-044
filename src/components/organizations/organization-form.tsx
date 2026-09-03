@@ -28,6 +28,7 @@ export function OrganizationForm({ mode, organization }: OrganizationFormProps) 
     image,
     imageError,
     isSubmitting,
+    isProcessing,
     isImageRemoved,
     dialog,
     dialogError,
@@ -43,7 +44,7 @@ export function OrganizationForm({ mode, organization }: OrganizationFormProps) 
   } = useOrganizationForm({ organization });
 
   function submitForm(event: FormEvent<HTMLFormElement>) {
-    if (imageError || isSubmitting) {
+    if (imageError || isProcessing) {
       event.preventDefault();
       return;
     }
@@ -54,7 +55,7 @@ export function OrganizationForm({ mode, organization }: OrganizationFormProps) 
   return (
     <>
       <form onSubmit={submitForm} className="flex w-full max-w-[650px] flex-col items-end gap-6">
-        <fieldset disabled={isSubmitting} className={FORM_SECTION_CLASS_NAME}>
+        <fieldset disabled={isProcessing} className={FORM_SECTION_CLASS_NAME}>
           <SectionTitle>Загальна інформація</SectionTitle>
 
           <div className="mt-3.5 flex flex-col gap-3.5">
@@ -80,7 +81,7 @@ export function OrganizationForm({ mode, organization }: OrganizationFormProps) 
           </div>
         </fieldset>
 
-        <fieldset disabled={isSubmitting} className={FORM_SECTION_CLASS_NAME}>
+        <fieldset disabled={isProcessing} className={FORM_SECTION_CLASS_NAME}>
           <SectionTitle>Інформація</SectionTitle>
 
           <div className="mt-3.5 flex flex-col gap-3.5">
@@ -107,7 +108,7 @@ export function OrganizationForm({ mode, organization }: OrganizationFormProps) 
           </div>
         </fieldset>
 
-        <fieldset disabled={isSubmitting} className={FORM_SECTION_CLASS_NAME}>
+        <fieldset disabled={isProcessing} className={FORM_SECTION_CLASS_NAME}>
           <SectionTitle className="text-[18px] leading-7">Зображення організації</SectionTitle>
 
           <div className="mt-3.5">
@@ -115,7 +116,7 @@ export function OrganizationForm({ mode, organization }: OrganizationFormProps) 
               currentPhoto={isImageRemoved ? null : organization?.photo}
               file={image}
               error={imageError}
-              disabled={isSubmitting}
+              disabled={isProcessing}
               onChange={handleImageChange}
               onDelete={
                 organization?.photo && !isImageRemoved ? handleImageDeleteRequest : undefined
@@ -125,7 +126,7 @@ export function OrganizationForm({ mode, organization }: OrganizationFormProps) 
           </div>
         </fieldset>
 
-        <fieldset disabled={isSubmitting} className={FORM_SECTION_CLASS_NAME}>
+        <fieldset disabled={isProcessing} className={FORM_SECTION_CLASS_NAME}>
           <SectionTitle>Години роботи</SectionTitle>
 
           <div className="mt-3.5">
@@ -157,7 +158,7 @@ export function OrganizationForm({ mode, organization }: OrganizationFormProps) 
             <Button
               type="button"
               variant="outline"
-              disabled={isSubmitting}
+              disabled={isProcessing}
               onClick={handleDeleteRequest}
               className="h-9 rounded-2xl border-text-muted bg-transparent text-[14px] leading-4 text-text-muted hover:bg-destructive/10 hover:text-destructive"
             >
@@ -167,7 +168,7 @@ export function OrganizationForm({ mode, organization }: OrganizationFormProps) 
           <Button
             type="button"
             variant="outline"
-            disabled={isSubmitting}
+            disabled={isProcessing}
             onClick={handleCancel}
             className="h-9 rounded-2xl border-destructive bg-transparent text-[14px] leading-4 text-destructive hover:bg-destructive/10 hover:text-destructive"
           >
@@ -176,7 +177,7 @@ export function OrganizationForm({ mode, organization }: OrganizationFormProps) 
 
           <Button
             type="submit"
-            disabled={isSubmitting}
+            disabled={isProcessing}
             className="h-9 rounded-2xl px-3 text-[14px] leading-4"
           >
             {isSubmitting ? "Збереження..." : mode === "create" ? "Додати організацію" : "Зберегти"}
@@ -188,7 +189,7 @@ export function OrganizationForm({ mode, organization }: OrganizationFormProps) 
           {...ORGANIZATION_DIALOGS[dialog.type]}
           open
           title="Підтвердження"
-          isPending={isSubmitting}
+          isPending={isProcessing}
           error={dialogError}
           onOpenChange={handleDialogOpenChange}
           onConfirm={handleConfirm}

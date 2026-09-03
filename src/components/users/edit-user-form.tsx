@@ -13,7 +13,7 @@ export function EditUserForm({ user }: EditUserFormProps) {
   const {
     values,
     errors,
-    isSubmitting,
+    isProcessing,
     isSaving,
     saveError,
     isSaveDialogOpen,
@@ -39,7 +39,7 @@ export function EditUserForm({ user }: EditUserFormProps) {
         mode="edit"
         values={values}
         errors={errors}
-        isSubmitting={isSubmitting}
+        isSubmitting={isProcessing}
         isDeleting={isDeleting}
         status={user.account.status}
         onFieldChange={setField}
