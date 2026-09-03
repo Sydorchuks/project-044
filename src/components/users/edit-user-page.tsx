@@ -4,6 +4,7 @@ import { useQuery } from "@tanstack/react-query";
 import { isAxiosError } from "axios";
 import { Breadcrumbs, type BreadcrumbItem } from "@/components/ui/breadcrumbs";
 import { Button } from "@/components/ui/button";
+import { Skeleton } from "@/components/ui/skeleton";
 import { DeletedUserDetails } from "@/components/users/deleted-user-details";
 import { EditUserForm } from "@/components/users/edit-user-form";
 import { getUser } from "@/features/users/api/users.api";
@@ -79,7 +80,7 @@ export function EditUserPage({ userId }: EditUserPageProps) {
 
 function EditUserFormFallback() {
   return (
-    <div className="h-120 w-full max-w-115 animate-pulse rounded-3xl bg-background shadow-sm desktop:max-w-140 ultra:max-w-170" />
+    <Skeleton className="h-120 w-full max-w-115 rounded-3xl shadow-sm desktop:max-w-140 ultra:max-w-170" />
   );
 }
 

@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { Plus } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
@@ -11,7 +12,8 @@ export function OrganizationsEmptyState() {
         </p>
 
         <Button
-          type="button"
+          nativeButton={false}
+          render={<Link href="/organizations/create" />}
           className="h-10 rounded-xl px-4 font-sans text-[14px] leading-4 font-medium"
         >
           <Plus aria-hidden="true" className="size-4" />

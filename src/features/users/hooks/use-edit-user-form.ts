@@ -22,17 +22,12 @@ export function useEditUserForm(user: User) {
 
   const initialValues = useMemo(() => toUserFormValues(user), [user]);
 
-  const {
-    values,
-    errors,
-    isDirty,
-    isSubmitting: isValidating,
-    setField,
-    createSubmitHandler,
-  } = useFormState({
-    initialValues,
-    schema: userFormSchema,
-  });
+  const { values, errors, isDirty, isValidating, setField, createValidationHandler } = useFormState(
+    {
+      initialValues,
+      schema: userFormSchema,
+    },
+  );
 
   const [isSaving, setIsSaving] = useState(false);
   const [saveError, setSaveError] = useState("");
@@ -43,8 +38,8 @@ export function useEditUserForm(user: User) {
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [pendingHref, setPendingHref] = useState<string | null>(null);
 
-  const isSubmitting = isValidating || isSaving;
-  const isBusy = isSubmitting || isDeleting;
+  const isSubmitting = isSaving;
+  const isBusy = isValidating || isSubmitting || isDeleting;
 
   const handleNavigationBlocked = useCallback((href: string) => {
     setSaveError("");
@@ -176,12 +171,13 @@ export function useEditUserForm(user: User) {
     }
   }
 
-  const handleSubmit = createSubmitHandler(handleSaveRequest, getUpdateUserError);
+  const handleSubmit = createValidationHandler(handleSaveRequest, getUpdateUserError);
 
   return {
     values,
     errors,
     isSubmitting,
+    isProcessing: isBusy,
     isSaving,
     saveError,
     isSaveDialogOpen,

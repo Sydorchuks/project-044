@@ -1,10 +1,12 @@
 "use client";
 
+import Link from "next/link";
 import { Plus } from "lucide-react";
 
 import { OrganizationCard } from "@/components/organizations/organization-card";
 import { OrganizationsEmptyState } from "@/components/organizations/organizations-empty-state";
 import { Button } from "@/components/ui/button";
+import { Skeleton } from "@/components/ui/skeleton";
 import { useOrganizations } from "@/features/organizations/hooks/use-organizations";
 
 export function OrganizationsPage() {
@@ -18,7 +20,8 @@ export function OrganizationsPage() {
         </h1>
 
         <Button
-          type="button"
+          nativeButton={false}
+          render={<Link href="/organizations/create" />}
           className="h-10 w-46 gap-1 rounded-2xl px-3.5 font-sans text-[14px] leading-4 font-medium"
         >
           <Plus aria-hidden="true" className="size-5" />
@@ -65,12 +68,12 @@ function OrganizationsGridSkeleton() {
       className="mt-7 grid max-w-[795px] grid-cols-1 gap-[25px] sm:grid-cols-2 desktop:max-w-[1615px] desktop:grid-cols-4"
     >
       {Array.from({ length: 4 }, (_, index) => (
-        <div key={index} className="animate-pulse">
-          <div className="aspect-[77/38] rounded-[10px] bg-surface" />
+        <div key={index}>
+          <Skeleton className="aspect-[77/38] rounded-[10px] bg-surface" />
           <div className="mx-[11px] mt-[18px]">
-            <div className="h-6.25 w-2/5 rounded bg-surface" />
-            <div className="mt-2 h-9 rounded bg-surface" />
-            <div className="mt-2.5 h-8.75 w-28.75 rounded-3xl bg-surface" />
+            <Skeleton className="h-6.25 w-2/5 rounded bg-surface" />
+            <Skeleton className="mt-2 h-9 rounded bg-surface" />
+            <Skeleton className="mt-2.5 h-8.75 w-28.75 rounded-3xl bg-surface" />
           </div>
         </div>
       ))}
