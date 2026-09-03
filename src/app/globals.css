@@ -69,6 +69,10 @@
   --color-organization-card-title: var(--organization-card-title);
   --color-organization-card-description: var(--organization-card-description);
 
+  --color-form-control: var(--form-control);
+  --color-text-disabled: var(--text-disabled);
+  --color-organization-switch-active: var(--organization-switch-active);
+
   --color-field-border: var(--field-border);
   --color-field-placeholder: var(--field-placeholder);
 
@@ -92,6 +96,8 @@
   --color-chart-5: var(--chart-5);
 
   --shadow-dashboard-card: var(--dashboard-card-shadow);
+  --shadow-organization-form: var(--organization-form-shadow);
+  --shadow-organization-switch: var(--organization-switch-shadow);
 
   --radius-sm: 2px;
   --radius-md: 3px;
@@ -163,6 +169,10 @@
   --organization-card-description: #5f6b7c;
   --organization-placeholder-end: #b4a2ff;
 
+  --form-control: #f9f9fc;
+  --text-disabled: #b8b8ba;
+  --organization-switch-active: #2d72d2;
+
   --field-border: #abb3bf;
   --field-placeholder: #abb3bf;
 
@@ -177,6 +187,8 @@
   --chart-5: #cd4246;
 
   --dashboard-card-shadow: 0 1px 1px rgb(17 20 24 / 20%), 0 0 0 1px rgb(17 20 24 / 10%);
+  --organization-form-shadow: 0 1.5px 2px rgb(16 24 40 / 10%);
+  --organization-switch-shadow: 0 0 0 2px rgb(17 20 24 / 50%);
   --panel-radius: 15px;
   --radius: 15px;
 
@@ -241,6 +253,10 @@
   --organization-card-title: #f6f7f9;
   --organization-card-description: #abb3bf;
   --organization-placeholder-end: #8bbcff;
+
+  --form-control: #252a31;
+  --text-disabled: #738091;
+  --organization-switch-active: #4c90f0;
 
   --field-border: #383e47;
   --field-placeholder: #abb3bf;

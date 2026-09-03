@@ -1,6 +1,8 @@
+import Link from "next/link";
 import { ImageIcon } from "lucide-react";
+
 import { Button } from "@/components/ui/button";
-import { Organization } from "@/features/organizations/schemas/organization.schema";
+import type { Organization } from "@/features/organizations/schemas/organization.schema";
 
 type OrganizationCardProps = Readonly<{
   organization: Organization;
@@ -32,13 +34,19 @@ export function OrganizationCard({ organization }: OrganizationCardProps) {
             {organization.name}
           </h2>
 
-          <p className="mt-2 line-clamp-2 h-9 font-sans text-[12px] leading-[14px] text-organization-card-description">
+          <div
+            role="region"
+            aria-label={`Опис організації ${organization.name}`}
+            tabIndex={0}
+            className="mt-2 h-9 [scrollbar-width:thin] overflow-y-auto overscroll-y-contain rounded-sm font-sans text-[12px] leading-[14px] break-words text-organization-card-description focus-visible:outline-2 focus-visible:outline-primary"
+          >
             {organization.description || "Опис організації відсутній"}
-          </p>
+          </div>
         </div>
 
         <Button
-          type="button"
+          nativeButton={false}
+          render={<Link href={`/organizations/${organization.id}`} />}
           variant="outline"
           className="h-8.75 w-28.75 rounded-3xl border-primary bg-transparent px-2 font-sans text-[14px] leading-4 font-medium text-primary hover:bg-primary hover:text-primary-foreground"
         >
