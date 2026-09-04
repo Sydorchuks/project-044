@@ -3,6 +3,10 @@
 import { useQuery } from "@tanstack/react-query";
 import Link from "next/link";
 
+import { DashboardNotFound } from "@/components/dashboard/dashboard-not-found";
+import { OrganizationInfoCard } from "@/components/organizations/organization-info-card";
+import { OrganizationStatistics } from "@/components/organizations/organization-statistics";
+import { OrganizationObjectsTable } from "@/components/organizations/organization-objects-table";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Breadcrumbs, type BreadcrumbItem } from "@/components/ui/breadcrumbs";
@@ -56,11 +60,13 @@ export function OrganizationDetailsPage({
     { label: organization.name },
   ];
 
+  if (organization.is_deleted) return <DashboardNotFound />;
+
   return (
-    <section className="min-h-full bg-main-bg px-5 pt-5 pb-8 lg:pr-4 lg:pl-0 xl:pr-7">
-      <div className="flex items-start justify-between gap-6">
-        <div>
-          <h1 className="font-sans text-[22px] leading-[26px] font-medium text-text-heading">
+    <section className="min-h-full bg-main-bg px-5 pt-6 pb-10 lg:pr-4 lg:pl-0 xl:pr-7">
+      <div className="flex flex-wrap items-start justify-between gap-6">
+        <div className="min-w-0">
+          <h1 className="font-sans text-[22px] leading-[26px] font-medium break-words text-text-heading">
             {organization.name}
           </h1>
 
@@ -70,7 +76,7 @@ export function OrganizationDetailsPage({
         <Button
           nativeButton={false}
           render={<Link href={`/organizations/${organization.id}/edit`} />}
-          className="h-10 w-46 rounded-2xl px-3.5 text-[14px] leading-4 font-medium"
+          className="h-9 w-38.5 shrink-0 rounded-2xl px-3.5 text-[14px] leading-4 font-medium"
         >
           Редагувати
         </Button>
@@ -81,6 +87,16 @@ export function OrganizationDetailsPage({
           Організацію збережено, але не вдалося оновити зображення. Спробуйте змінити його ще раз.
         </p>
       ) : null}
+      <div
+        key={organization.id}
+        className="mt-9 grid items-start gap-6 desktop:mt-5 desktop:grid-cols-[360px_minmax(0,1fr)]"
+      >
+        <OrganizationInfoCard organization={organization} />
+        <div className="grid min-w-0 gap-6">
+          <OrganizationStatistics organization={organization} />
+          <OrganizationObjectsTable organizationId={organization.id} />
+        </div>
+      </div>
     </section>
   );
 }
