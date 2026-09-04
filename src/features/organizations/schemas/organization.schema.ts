@@ -8,6 +8,7 @@ export const organizationSchema = z.object({
   phone: z.string(),
   address: z.string(),
   is_deleted: z.boolean(),
+  created_at: z.iso.datetime({ offset: true }).optional(),
   monday_start_hours: z.number().nullable().optional(),
   monday_end_hours: z.number().nullable().optional(),
   tuesday_start_hours: z.number().nullable().optional(),
