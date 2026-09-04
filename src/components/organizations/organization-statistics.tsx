@@ -9,7 +9,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { getOrganizationStatistics } from "@/features/organizations/api/organization-details.api";
 import type { Organization } from "@/features/organizations/schemas/organization.schema";
 
-type OrganizationStatisticsProps = Readonly<{ organization: Organization }>;
+type OrganizationStatisticsProps = { organization: Organization };
 
 const numberFormatter = new Intl.NumberFormat("uk-UA");
 const moneyFormatter = new Intl.NumberFormat("uk-UA", {
@@ -50,11 +50,11 @@ export function OrganizationStatistics({ organization }: OrganizationStatisticsP
               <Icon aria-hidden="true" className="size-6" />
             </span>
             <div>
-              <h2 className="text-[16px] leading-5 font-medium text-text-muted">{label}</h2>
+              <h2 className="text-base leading-5 font-medium text-text-muted">{label}</h2>
               {isLoading ? (
                 <Skeleton className="mt-2 h-6.5 w-24 bg-muted" />
               ) : (
-                <p className="mt-2 text-[22px] leading-6.5 font-medium wrap-break-word text-text-heading">
+                <p className="mt-2 text-title leading-6.5 font-medium wrap-break-word text-text-heading">
                   {value}
                 </p>
               )}
@@ -63,14 +63,14 @@ export function OrganizationStatistics({ organization }: OrganizationStatisticsP
         ))}
       </div>
       {isError ? (
-        <div className="mt-2 flex flex-wrap items-center gap-x-3 text-[12px] leading-4 text-text-muted">
+        <div className="mt-2 flex flex-wrap items-center gap-x-3 text-xs leading-4 text-text-muted">
           <p role="status">Статистика тимчасово недоступна.</p>
           <Button
             type="button"
             variant="link"
             disabled={isFetching}
             onClick={() => void refetch()}
-            className="h-auto p-0 text-[12px]"
+            className="h-auto p-0 text-xs"
           >
             Повторити
           </Button>
