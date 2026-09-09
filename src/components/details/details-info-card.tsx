@@ -5,15 +5,15 @@ import { ImageIcon } from "lucide-react";
 import { useState } from "react";
 
 import { Card } from "@/components/ui/card";
-import { WEEKDAYS } from "@/features/organizations/config/organization-form.config";
 import { formatWorkingHours } from "@/features/organizations/lib/organization-details.utils";
-import type { Weekday } from "@/features/organizations/config/organization-form.config";
 import { cn } from "@/lib/utils";
+
+type WorkingHoursRow = { key: string; label: string; start?: number | null; end?: number | null };
 
 type DetailsInfoCardProps = {
   photo?: string | null;
   photoAlt: string;
-  workingHours: Partial<Record<`${Weekday}_${"start" | "end"}_hours`, number | null>>;
+  workingHours: WorkingHoursRow[];
   fields: { label: string; value: string | null | undefined }[];
   className?: string;
 };
@@ -53,15 +53,10 @@ export function DetailsInfoCard({
       <div className="min-w-0 text-sm leading-5 md:w-36 desktop:order-2 desktop:w-full">
         <h2 className="font-medium text-text-heading">Години роботи</h2>
         <ul className="mt-1 space-y-1 text-text-muted">
-          {WEEKDAYS.map(({ key, label }) => (
+          {workingHours.map(({ key, label, start, end }) => (
             <li key={key} className="flex flex-wrap gap-x-1">
               <span>{label}</span>
-              <span>
-                {formatWorkingHours(
-                  workingHours[`${key}_start_hours`],
-                  workingHours[`${key}_end_hours`],
-                )}
-              </span>
+              <span>{formatWorkingHours(start, end)}</span>
             </li>
           ))}
         </ul>

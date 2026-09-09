@@ -1,7 +1,6 @@
 "use client";
 
 import { useQuery } from "@tanstack/react-query";
-import { isAxiosError } from "axios";
 import { BadgeCheck, ShoppingCart, Wallet } from "lucide-react";
 
 import { DashboardNotFound } from "@/components/dashboard/dashboard-not-found";
@@ -12,14 +11,11 @@ import { Breadcrumbs } from "@/components/ui/breadcrumbs";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { getRentalObject } from "@/features/rental-objects/api/rental-objects.api";
+import { WEEKDAYS } from "@/features/organizations/config/organization-form.config";
+import { isForbiddenError, isMissingResourceError } from "@/lib/api/api-error.utils";
+import { formatMoney, formatNumber } from "@/lib/formatters";
 
 type ObjectDetailsPageProps = { organizationId: number; objectId: number };
-
-const moneyFormatter = new Intl.NumberFormat("uk-UA", {
-  minimumFractionDigits: 2,
-  maximumFractionDigits: 2,
-});
-const numberFormatter = new Intl.NumberFormat("uk-UA");
 
 export function ObjectDetailsPage({ organizationId, objectId }: ObjectDetailsPageProps) {
   const {
@@ -35,7 +31,7 @@ export function ObjectDetailsPage({ organizationId, objectId }: ObjectDetailsPag
     retry: false,
   });
 
-  if (isAxiosError(error) && [404, 409].includes(error.response?.status ?? 0)) {
+  if (isMissingResourceError(error)) {
     return <DashboardNotFound />;
   }
 
@@ -44,7 +40,7 @@ export function ObjectDetailsPage({ organizationId, objectId }: ObjectDetailsPag
       <section className="grid min-h-full place-items-center bg-main-bg px-5 text-center">
         <div>
           <p role="alert" className="text-lg leading-6 text-text-error">
-            {isAxiosError(error) && error.response?.status === 403
+            {isForbiddenError(error)
               ? "Недостатньо прав для перегляду об’єкта"
               : "Не вдалося завантажити об’єкт"}
           </p>
@@ -75,8 +71,8 @@ export function ObjectDetailsPage({ organizationId, objectId }: ObjectDetailsPag
   }
 
   if (
-    object.is_deleted ||
-    object.organization.is_deleted ||
+    object.isDeleted ||
+    object.organization.isDeleted ||
     object.organization.id !== organizationId
   ) {
     return <DashboardNotFound />;
@@ -86,17 +82,17 @@ export function ObjectDetailsPage({ organizationId, objectId }: ObjectDetailsPag
     {
       label: "Всього резервацій",
       icon: Wallet,
-      value: `UAH ${moneyFormatter.format(object.total_reservation_sum)}`,
+      value: formatMoney(object.totalReservationSum),
     },
     {
       label: "Всього бронювань",
       icon: ShoppingCart,
-      value: numberFormatter.format(object.total_reservation_amount),
+      value: formatNumber(object.totalReservationAmount),
     },
     {
       label: "Всього клієнтів",
       icon: BadgeCheck,
-      value: numberFormatter.format(object.total_clients_amount),
+      value: formatNumber(object.totalClientsAmount),
     },
   ];
 
@@ -131,7 +127,14 @@ export function ObjectDetailsPage({ organizationId, objectId }: ObjectDetailsPag
         <DetailsInfoCard
           photo={object.photo}
           photoAlt={`Фото об’єкта ${object.name}`}
-          workingHours={object}
+          workingHours={WEEKDAYS.map(({ key, label }) => {
+            return {
+              key,
+              label,
+              start: object.workingHours[key].start,
+              end: object.workingHours[key].end,
+            };
+          })}
           className="max-w-187.25"
           fields={[
             { label: "ID об’єкта", value: `ID-${object.id}` },
@@ -143,7 +146,7 @@ export function ObjectDetailsPage({ organizationId, objectId }: ObjectDetailsPag
           <section aria-label="Статистика об’єкта">
             <StatisticsCards metrics={metrics} />
           </section>
-          <ObjectBookingHistory reservationCount={object.total_reservation_amount} />
+          <ObjectBookingHistory reservationCount={object.totalReservationAmount} />
         </div>
       </div>
     </section>

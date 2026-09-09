@@ -17,7 +17,7 @@ export function StatisticsCards({ metrics, isLoading = false }: StatisticsCardsP
             <Icon aria-hidden="true" className="size-6" />
           </span>
           <div>
-            <h2 className="text-base leading-5 font-medium text-text-muted">{label}</h2>
+            <h4 className="text-base leading-5 font-medium text-text-muted">{label}</h4>
             {isLoading ? (
               <Skeleton className="mt-2 h-6.5 w-24 bg-muted" />
             ) : (

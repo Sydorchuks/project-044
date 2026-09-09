@@ -7,14 +7,9 @@ import { Button } from "@/components/ui/button";
 import { StatisticsCards } from "@/components/details/statistics-cards";
 import { getOrganizationStatistics } from "@/features/organizations/api/organization-details.api";
 import type { Organization } from "@/features/organizations/schemas/organization.schema";
+import { formatMoney, formatNumber } from "@/lib/formatters";
 
 type OrganizationStatisticsProps = { organization: Organization };
-
-const numberFormatter = new Intl.NumberFormat("uk-UA");
-const moneyFormatter = new Intl.NumberFormat("uk-UA", {
-  minimumFractionDigits: 2,
-  maximumFractionDigits: 2,
-});
 
 export function OrganizationStatistics({ organization }: OrganizationStatisticsProps) {
   const { data, isLoading, isError, refetch, isFetching } = useQuery({
@@ -30,12 +25,12 @@ export function OrganizationStatistics({ organization }: OrganizationStatisticsP
     {
       label: "Всього продажів",
       icon: Wallet,
-      value: data ? `UAH ${moneyFormatter.format(data.total_revenue)}` : "—",
+      value: data ? formatMoney(data.total_revenue) : "—",
     },
     {
       label: "Всього бронювань",
       icon: ShoppingCart,
-      value: data ? numberFormatter.format(data.total_reservations) : "—",
+      value: data ? formatNumber(data.total_reservations) : "—",
     },
     { label: "Всього клієнтів", icon: BadgeCheck, value: "—" },
   ];
