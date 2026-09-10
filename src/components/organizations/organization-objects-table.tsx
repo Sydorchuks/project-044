@@ -4,6 +4,7 @@ import { useQuery } from "@tanstack/react-query";
 import { createColumnHelper } from "@tanstack/react-table";
 import { ChevronDown, ChevronLeft, ChevronRight, Plus } from "lucide-react";
 import { useEffect, type ComponentProps } from "react";
+import Link from "next/link";
 
 import { DataTable, dataTableFeatures } from "@/components/data-table";
 import { Button } from "@/components/ui/button";
@@ -91,10 +92,10 @@ export function OrganizationObjectsTable({ organizationId }: OrganizationObjects
     columnHelper.display({
       id: "actions",
       header: "Дія",
-      cell: () => (
+      cell: ({ row }) => (
         <Button
-          type="button"
-          disabled
+          nativeButton={false}
+          render={<Link href={`/organizations/${organizationId}/objects/${row.original.id}`} />}
           className="h-6 rounded-full bg-background-gray px-3 text-xs text-primary-foreground"
         >
           Відкрити

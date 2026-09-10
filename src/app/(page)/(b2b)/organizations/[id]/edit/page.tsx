@@ -1,6 +1,6 @@
 import { OrganizationFormPage } from "@/components/organizations/organization-form-page";
 import { DashboardNotFound } from "@/components/dashboard/dashboard-not-found";
-import { parseOrganizationId } from "@/features/organizations/lib/organization-route.utils";
+import { parsePositiveIntegerParam } from "@/lib/route-params";
 
 type EditOrganizationPageProps = Readonly<{
   params: Promise<{ id: string }>;
@@ -8,7 +8,7 @@ type EditOrganizationPageProps = Readonly<{
 
 export default async function EditOrganizationPage({ params }: EditOrganizationPageProps) {
   const { id } = await params;
-  const organizationId = parseOrganizationId(id);
+  const organizationId = parsePositiveIntegerParam(id);
 
   if (organizationId === null) {
     return <DashboardNotFound />;
